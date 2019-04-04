@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class Vector3Driver : Driver<Vector3>
+public class Vector2IntDriver : Driver<Vector2Int>
 {
 
     [SerializeField]
     [HideInInspector]
-    Vector3 offset = Vector3.zero;
-    public Vector3 Offset{
+    Vector2Int offset = Vector2Int.zero;
+    public Vector2Int Offset{
         get{
             return offset;
         }
@@ -20,28 +20,28 @@ public class Vector3Driver : Driver<Vector3>
     }
 
 
-    public override Vector3 GetSourceValue()
+    public override Vector2Int GetSourceValue()
     {
         if(BindingSources.Count == 1)
-            return BindingSources[0].getValueVector3() + offset;
+            return BindingSources[0].getValueVector2Int() + offset;
         else if(BindingSources.Count > 1){
-            Vector3 sum = Vector3.zero;
+            Vector2Int sum = Vector2Int.zero;
             foreach(IBindingSource source in BindingSources){
-                sum += source.getValueVector3();
+                sum += source.getValueVector2Int();
             }
-            sum = sum / BindingSources.Count;
+            sum = new Vector2Int(sum.x/BindingSources.Count, sum.y/BindingSources.Count);
             return sum + offset;
         }
         else
             throw new System.NullReferenceException("There are no sources defined for this driver.");            
     }
 
-    public override List<Vector3> GetSourceValues()
+    public override List<Vector2Int> GetSourceValues()
     {
-        return BindingSources.Select(b => b.getValueVector3()).ToList();
+        return BindingSources.Select(b => b.getValueVector2Int()).ToList();
     }
 
-    protected override Vector3 GetContextualValue()
+    protected override Vector2Int GetContextualValue()
     {
         return offset;
     }

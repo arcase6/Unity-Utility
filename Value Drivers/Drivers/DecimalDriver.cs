@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class FloatDriver : Driver<float>
+public class DecimalDriver : Driver<decimal>
 {
 
     [SerializeField]
     [HideInInspector]
-    float offset = 0f;
-    public float Offset{
+    decimal offset = 0;
+    public decimal Offset{
         get{
             return offset;
         }
@@ -19,24 +19,24 @@ public class FloatDriver : Driver<float>
         }
     }
 
-    public override float GetSourceValue()
+    public override decimal GetSourceValue()
     {
         if(this.BindingSources.Count == 1)
-            return BindingSources[0].getValueFloat();
+            return BindingSources[0].getValueDecimal();
         else if(this.BindingSources.Count > 1)
-            return BindingSources.Average(b => b.getValueFloat());
+            return BindingSources.Average(b => b.getValueDecimal());
         else
             throw new System.NullReferenceException("There are no sources defined for this driver.");
         
     }
 
-    public override List<float> GetSourceValues()
+    public override List<decimal> GetSourceValues()
     {
-        return BindingSources.Select(b => b.getValueFloat()).ToList();
+        return BindingSources.Select(b => b.getValueDecimal()).ToList();
     }
 
-    protected override float GetContextualValue()
+    protected override decimal GetContextualValue()
     {
-        return 0f;
+        return 0;
     }
 }

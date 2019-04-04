@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 using UnityEditor;
 
-[CustomEditor(typeof(FloatDriver))]
-public class FloatDriverEditor : DriverEditor<float> {
-
+[CustomEditor(typeof(Vector2Driver))]
+public class Vector2DriverEditor: DriverEditor<Vector2> {
+    
     SerializedProperty OffsetP;
 
     public override void OnEnable()
@@ -13,6 +13,9 @@ public class FloatDriverEditor : DriverEditor<float> {
 
         OffsetP = serializedObject.FindProperty("offset");
     }
+
+
+
     public override void OnInspectorGUI() {
         serializedObject.Update();
 
@@ -20,12 +23,13 @@ public class FloatDriverEditor : DriverEditor<float> {
         EditorGUILayout.PropertyField(OffsetP);
         if(EditorGUI.EndChangeCheck()){
             if(EditorApplication.isPlaying || EditorApplication.isPaused){
-                ((FloatDriver)target).SetUpdateFlag(true); 
+                ((Vector2Driver)target).SetUpdateFlag(true); 
             }
         }
 
         base.OnInspectorGUI();
-        
+
+        serializedObject.ApplyModifiedProperties();
         
     }
 }

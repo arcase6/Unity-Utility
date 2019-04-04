@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 using UnityEditor;
 
-[CustomEditor(typeof(FloatDriver))]
-public class FloatDriverEditor : DriverEditor<float> {
+[CustomEditor(typeof(DoubleDriver))]
+public class DoubleDriverEditor : DriverEditor<double> {
 
     SerializedProperty OffsetP;
 
@@ -20,7 +20,7 @@ public class FloatDriverEditor : DriverEditor<float> {
         EditorGUILayout.PropertyField(OffsetP);
         if(EditorGUI.EndChangeCheck()){
             if(EditorApplication.isPlaying || EditorApplication.isPaused){
-                ((FloatDriver)target).SetUpdateFlag(true); 
+                ((DoubleDriver)target).SetUpdateFlag(true); 
             }
         }
 

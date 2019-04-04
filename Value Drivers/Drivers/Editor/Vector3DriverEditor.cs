@@ -17,8 +17,8 @@ public class Vector3DriverEditor: DriverEditor<Vector3> {
 
 
     public override void OnInspectorGUI() {
-        
-        base.OnInspectorGUI();
+        serializedObject.Update();
+
         EditorGUI.BeginChangeCheck();
         EditorGUILayout.PropertyField(OffsetP);
         if(EditorGUI.EndChangeCheck()){
@@ -26,6 +26,8 @@ public class Vector3DriverEditor: DriverEditor<Vector3> {
                 ((Vector3Driver)target).SetUpdateFlag(true); 
             }
         }
+
+        base.OnInspectorGUI();
 
         serializedObject.ApplyModifiedProperties();
         

@@ -1,26 +1,26 @@
 ﻿using UnityEngine;
 using UnityEditor;
 
-[CustomEditor(typeof(FloatDriver))]
-public class FloatDriverEditor : DriverEditor<float> {
+[CustomEditor(typeof(BooleanDriver))]
+public class BooleanDriverEditor : DriverEditor<bool> {
 
-    SerializedProperty OffsetP;
+    SerializedProperty InvertSettingP;
 
     public override void OnEnable()
     {
         base.OnEnable();
         if (target == null) return;
 
-        OffsetP = serializedObject.FindProperty("offset");
+        InvertSettingP = serializedObject.FindProperty("invertValue");
     }
     public override void OnInspectorGUI() {
         serializedObject.Update();
 
         EditorGUI.BeginChangeCheck();
-        EditorGUILayout.PropertyField(OffsetP);
+        EditorGUILayout.PropertyField(InvertSettingP);
         if(EditorGUI.EndChangeCheck()){
             if(EditorApplication.isPlaying || EditorApplication.isPaused){
-                ((FloatDriver)target).SetUpdateFlag(true); 
+                ((BooleanDriver)target).SetUpdateFlag(true); 
             }
         }
 

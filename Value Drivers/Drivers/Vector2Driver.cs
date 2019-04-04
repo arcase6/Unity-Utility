@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class Vector3Driver : Driver<Vector3>
+public class Vector2Driver : Driver<Vector2>
 {
 
     [SerializeField]
     [HideInInspector]
-    Vector3 offset = Vector3.zero;
-    public Vector3 Offset{
+    Vector2 offset = Vector2.zero;
+    public Vector2 Offset{
         get{
             return offset;
         }
@@ -20,14 +20,14 @@ public class Vector3Driver : Driver<Vector3>
     }
 
 
-    public override Vector3 GetSourceValue()
+    public override Vector2 GetSourceValue()
     {
         if(BindingSources.Count == 1)
-            return BindingSources[0].getValueVector3() + offset;
+            return BindingSources[0].getValueVector2() + offset;
         else if(BindingSources.Count > 1){
-            Vector3 sum = Vector3.zero;
+            Vector2 sum = Vector2.zero;
             foreach(IBindingSource source in BindingSources){
-                sum += source.getValueVector3();
+                sum += source.getValueVector2();
             }
             sum = sum / BindingSources.Count;
             return sum + offset;
@@ -36,12 +36,12 @@ public class Vector3Driver : Driver<Vector3>
             throw new System.NullReferenceException("There are no sources defined for this driver.");            
     }
 
-    public override List<Vector3> GetSourceValues()
+    public override List<Vector2> GetSourceValues()
     {
-        return BindingSources.Select(b => b.getValueVector3()).ToList();
+        return BindingSources.Select(b => b.getValueVector2()).ToList();
     }
 
-    protected override Vector3 GetContextualValue()
+    protected override Vector2 GetContextualValue()
     {
         return offset;
     }

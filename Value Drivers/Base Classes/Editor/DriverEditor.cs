@@ -50,12 +50,18 @@ public class DriverEditor<T> : Editor {
     public override void OnInspectorGUI()
     {
         serializedObject.Update();
+
         DrawTargetSelectionFields();
 
         EditorGUILayout.PropertyField(ModeOfOperationP,new GUIContent("Evaluate Mode"));       
         EditorGUILayout.ObjectField(EvaluatorP,typeof(DriverEvaluator<T>),new GUIContent(EvaluatorLabel));
 
         MethodList.DoLayoutList();
+
+        if(GUILayout.Button("Update")){
+            ((Driver<T>)target).EditorUpdate();
+        }
+
         serializedObject.ApplyModifiedProperties();
     }
 #endregion

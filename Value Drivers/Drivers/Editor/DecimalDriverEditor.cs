@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 using UnityEditor;
 
-[CustomEditor(typeof(FloatDriver))]
-public class FloatDriverEditor : DriverEditor<float> {
+[CustomEditor(typeof(DecimalDriver))]
+public class DecimalDriverEditor : DriverEditor<decimal> {
 
     SerializedProperty OffsetP;
 
@@ -20,7 +20,7 @@ public class FloatDriverEditor : DriverEditor<float> {
         EditorGUILayout.PropertyField(OffsetP);
         if(EditorGUI.EndChangeCheck()){
             if(EditorApplication.isPlaying || EditorApplication.isPaused){
-                ((FloatDriver)target).SetUpdateFlag(true); 
+                ((DecimalDriver)target).SetUpdateFlag(true); 
             }
         }
 
