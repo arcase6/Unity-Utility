@@ -40,10 +40,5 @@ public class Vector3Driver : Driver<Vector3>
     {
         return BindingSources.Select(b => b.getValueVector3()).ToList();
     }
-
-    protected override Vector3 GetContextualValue()
-    {
-        return offset;
-    }
 }
 

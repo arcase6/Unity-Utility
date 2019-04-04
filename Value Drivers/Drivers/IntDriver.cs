@@ -40,8 +40,4 @@ public class IntegerDriver : Driver<int>
         return BindingSources.Select(b => b.getValueInteger()).ToList();
     }
 
-    protected override int GetContextualValue()
-    {
-        return 0;
-    }
 }

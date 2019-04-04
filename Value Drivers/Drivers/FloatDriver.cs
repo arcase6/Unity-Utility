@@ -34,9 +34,4 @@ public class FloatDriver : Driver<float>
     {
         return BindingSources.Select(b => b.getValueFloat()).ToList();
     }
-
-    protected override float GetContextualValue()
-    {
-        return 0f;
-    }
 }

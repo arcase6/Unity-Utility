@@ -68,7 +68,6 @@ public abstract class Driver<T> : MonoBehaviour, IListener, ISerializationCallba
         }
     }
 
-    protected abstract T GetContextualValue();
 
     public abstract T GetSourceValue();
 
@@ -108,10 +107,10 @@ public abstract class Driver<T> : MonoBehaviour, IListener, ISerializationCallba
                         this.SetTargetProp(GetSourceValue());
                         break;
                     case DriverMode.UseEvaluater:
-                        this.SetTargetProp(this.DriverEvaluator.Evaluate(GetSourceValues(), this.GetContextualValue()));
+                        this.SetTargetProp(this.DriverEvaluator.Evaluate(GetSourceValues()));
                         break;
                     case DriverMode.UseEvaluaterComplexSources:
-                        this.SetTargetProp((T)this.DriverEvaluator.Evaluate(GetSourceValuesAsObjects(), this.GetContextualValue()));
+                        this.SetTargetProp((T)this.DriverEvaluator.Evaluate(GetSourceValuesAsObjects()));
                         break;
                 }
             }

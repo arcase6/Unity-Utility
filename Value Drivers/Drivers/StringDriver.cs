@@ -27,9 +27,4 @@ public class StringDriver : Driver<string>
     {
         return BindingSources.Select(b => b.getValueString()).ToList();
     }
-
-    protected override string GetContextualValue()
-    {
-        return "";
-    }
 }

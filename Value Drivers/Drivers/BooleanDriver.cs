@@ -33,9 +33,4 @@ public class BooleanDriver : Driver<bool>
     {
         return BindingSources.Select(b => b.getValueBoolean()).ToList();
     }
-
-    protected override bool GetContextualValue()
-    {
-        return false;
-    }
 }

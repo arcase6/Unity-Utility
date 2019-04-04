@@ -34,9 +34,4 @@ public class DecimalDriver : Driver<decimal>
     {
         return BindingSources.Select(b => b.getValueDecimal()).ToList();
     }
-
-    protected override decimal GetContextualValue()
-    {
-        return 0;
-    }
 }

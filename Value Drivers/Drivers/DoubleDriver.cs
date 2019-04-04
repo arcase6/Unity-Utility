@@ -34,9 +34,4 @@ public class DoubleDriver : Driver<double>
     {
         return BindingSources.Select(b => b.getValueDouble()).ToList();
     }
-
-    protected override double GetContextualValue()
-    {
-        return 0;
-    }
 }
