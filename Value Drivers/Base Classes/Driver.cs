@@ -94,6 +94,7 @@ public abstract class Driver<T> : MonoBehaviour, IListener, ISerializationCallba
 
     }
 
+    [ExecuteInEditMode]
     private void LateUpdate()
     {
         try
@@ -148,14 +149,20 @@ public abstract class Driver<T> : MonoBehaviour, IListener, ISerializationCallba
     public void OnBeforeSerialize()
     {
         this.DriverEvaluatorSerializable = this.DriverEvaluator;
-        if(BindingSources != null && BindingSources.Count > 0){
-        BindingSourcesRaw = BindingSources.Select(b =>
+        if (BindingSources != null && BindingSources.Count > 0)
         {
-            BindingSourceType sourceType = (b as BindingSourceMonobehaviour != null) ? BindingSourceType.MonoBehaviour : BindingSourceType.ScriptableObject;
-            return new BindingSourceData() { ObjectReference = b as Object, ReferenceType = sourceType };
-        }).ToList();
+            if (!BindingSources.Any(b => b == null))
+            {
+                BindingSourcesRaw = BindingSources.Select(b =>
+                {
+                    BindingSourceType sourceType = (b as BindingSourceScriptableObject == null) ? BindingSourceType.MonoBehaviour : BindingSourceType.ScriptableObject;
+                    //Debug.Log(sourceType.ToString());
+                    return new BindingSourceData() { ObjectReference = b as Object, ReferenceType = sourceType };
+                }).ToList();
+            }
         }
-        else{
+        else
+        {
             BindingSourcesRaw = new List<BindingSourceData>();
         }
     }
