@@ -6,7 +6,10 @@ public interface IBindingSource : IObservable {
     VariableType SourceType{
         get;set;
     }
-    bool isModeLocked(ref BindingMode modeToLockTo);
+    BindingMode PrefferedMode{get;}
+    
+    bool LockBindingMode{get;}
+
     int getValueInteger();
 
     float getValueFloat();

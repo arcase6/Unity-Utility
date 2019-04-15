@@ -19,6 +19,10 @@ public class UIDraggable : BindingSourceMonobehaviour, IBeginDragHandler, IDragH
     float UIValueOnClick;
     private bool IsDragging = false;
 
+    public override BindingMode PrefferedMode => BindingMode.OffsetFromSource;
+
+    public override bool LockBindingMode => true;
+
     #region IBindingSource overrides
     public override int getValueInteger()
     {
@@ -43,12 +47,6 @@ public class UIDraggable : BindingSourceMonobehaviour, IBeginDragHandler, IDragH
     public override void setFromValueString(string valueString)
     {
         UIValue = float.Parse(valueString);
-    }
-
-    public override bool isModeLocked(ref BindingMode ModetoLockTo)
-    {
-        ModetoLockTo = BindingMode.OffsetFromSource;
-        return true;
     }
     
     #endregion

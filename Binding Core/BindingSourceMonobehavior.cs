@@ -10,6 +10,8 @@ public abstract class BindingSourceMonobehaviour : MonoBehaviour, IBindingSource
     [HideInInspector]
     private VariableType sourceType = VariableType.Unspecified;
     public VariableType SourceType { get => sourceType; set => sourceType = value; }
+    public abstract BindingMode PrefferedMode { get; }
+    public abstract bool LockBindingMode { get; }
 
     public void NotifyChange()
     {
@@ -41,10 +43,6 @@ public abstract class BindingSourceMonobehaviour : MonoBehaviour, IBindingSource
 
     public abstract void setFromValueString(string valueString);
 
-    public virtual bool isModeLocked(ref BindingMode ModeToLockTo)
-    {
-        return false;
-    }
 
     public abstract decimal getValueDecimal();
     public abstract bool getValueBoolean();

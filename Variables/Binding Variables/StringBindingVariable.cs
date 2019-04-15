@@ -10,8 +10,9 @@ public class StringBindingVariable : BindingSourceScriptableObject
     private string value;
 
     public string Value { get => value; set{ this.value = value; NotifyChange();} }
+    public override VariableType SourceType { get => VariableType.String; set{}} 
+    
     public override void Init() {
-        this.SourceType = VariableType.String;
         //don't use property to avoid triggering an event on start
         value = StartingValue;
     }

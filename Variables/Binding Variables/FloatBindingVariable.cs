@@ -11,8 +11,10 @@ public class FloatBindingVariable : BindingSourceScriptableObject
     private float value;
 
     public float Value { get => value; set{ this.value = value; NotifyChange();} }
+   
+    public override VariableType SourceType { get => VariableType.Float; set{}} 
+
     public override void Init() {
-        this.SourceType = VariableType.Float;
         //don't use property to avoid triggering an event on start
         value = StartingValue;
     }

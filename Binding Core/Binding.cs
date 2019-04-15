@@ -7,32 +7,14 @@ using UnityEngine.Events;
 public class Binding : MonoBehaviour, IListener
 {
     public bool InitializeFromSource = false;
-    //public bool IsTwoWay = false;
     [HideInInspector]
     public BindingMode BindingMode;
 
-    [HideInInspector]
-    public BindingSourceType SourceType = BindingSourceType.MonoBehaviour;
-
-    [HideInInspector]
-    public int SelectedComponentIndex;
-    public IBindingSource Source
-    {
-        set
-        {
-            if (value as Object != null)
-            {
-                source = value;
-                SourceRef = value as Object;
-            }
-        }
-        get => source;
-    }
+    public IBindingSource Source;
 
     [HideInInspector]
     [SerializeField]
-    private Object SourceRef; //included so unity can serialize properly
-    private IBindingSource source;
+    private BindingSourceData SourceRaw = new BindingSourceData(){ReferenceType = BindingSourceType.MonoBehaviour}; //included so unity can serialize properly
     private float cachedSourceValue = 0.0f;
     private UIMediator Mediator;
 
@@ -42,26 +24,40 @@ public class Binding : MonoBehaviour, IListener
         {
             gameObject.AddComponent(typeof(UIMediator));
         }
+        SourceRaw = new BindingSourceData(){ReferenceType = BindingSourceType.MonoBehaviour,ObjectReference = null};
     }
 
     private void Awake()
     {
-        if (SourceType == BindingSourceType.ScriptableObject)
-            source = (IBindingSource)SourceRef;
-        else
-            source = ((MonoBehaviour)SourceRef).GetComponents<IBindingSource>()[SelectedComponentIndex];
-        BindingMode temp = BindingMode.SourceToBindingOneWay;
-        if(source.isModeLocked(ref temp))
-            this.BindingMode = temp;
-
         Mediator = GetComponent<UIMediator>();
     }
 
+    public virtual void OnBeforeSerialize()
+    {
+        SourceRaw = new BindingSourceData() { ObjectReference = Source as Object, ReferenceType = BindingSourceType.MonoBehaviour };
+        if (Source as BindingSourceScriptableObject != null)
+            SourceRaw.ReferenceType = BindingSourceType.ScriptableObject;
+        if (Source != null && Source.LockBindingMode)
+            this.BindingMode = Source.PrefferedMode;
+        
+    }
+
+    public virtual void OnAfterDeserialize()
+    {
+        if (SourceRaw != null)
+            Source = SourceRaw.ObjectReference as IBindingSource;
+    }
+
+
+
     private void OnEnable()
     {
-        cachedSourceValue = source.getValueFloat();
-        source.AddListener(this);
-        if(!Mediator.isInitialiazed)
+        if(Source == null){
+            OnAfterDeserialize();
+        }
+        cachedSourceValue = Source.getValueFloat();
+        Source.AddListener(this);
+        if (!Mediator.isInitialiazed)
             Mediator.Start();
         Mediator.TextChanged.AddListener(TextChanged);
         if (InitializeFromSource)
@@ -70,7 +66,7 @@ public class Binding : MonoBehaviour, IListener
 
     private void OnDisable()
     {
-        source.RemoveListener(this);
+        Source.RemoveListener(this);
         Mediator.TextChanged.RemoveListener(TextChanged);
     }
 
@@ -78,15 +74,17 @@ public class Binding : MonoBehaviour, IListener
     {
         if (BindingMode == BindingMode.BindingToSourceOneWay)
         {
-            string sourceValue = this.source.getValueString();
+            string sourceValue = this.Source.getValueString();
             string bindingValue = this.Mediator.GetText();
             if (sourceValue != bindingValue)
-                source.setFromValueString(bindingValue);
+                Source.setFromValueString(bindingValue);
         }
-        else if(BindingMode == BindingMode.OffsetFromSource){
-            float sourceValue = source.getValueFloat();
+        else if (BindingMode == BindingMode.OffsetFromSource)
+        {
+            float sourceValue = Source.getValueFloat();
             float difference = sourceValue - cachedSourceValue;
-            if(Mathf.Abs(difference) >= .01f){
+            if (Mathf.Abs(difference) >= .01f)
+            {
                 float displayValue = float.Parse(this.Mediator.GetTextUnformatted());
                 displayValue += difference;
                 cachedSourceValue = sourceValue;
@@ -103,15 +101,15 @@ public class Binding : MonoBehaviour, IListener
 
     private void SyncSource()
     {
-        string value = this.source.getValueString();
+        string value = this.Source.getValueString();
         Mediator.SetText(value);
     }
 
     private void TextChanged(string newValue)
     {
-        if (BindingMode == BindingMode.TwoWay || BindingMode == BindingMode.BindingToSourceOneWay )
+        if (BindingMode == BindingMode.TwoWay || BindingMode == BindingMode.BindingToSourceOneWay)
         {
-            source.setFromValueString(Mediator.GetTextUnformatted());
+            Source.setFromValueString(Mediator.GetTextUnformatted());
         }
     }
 

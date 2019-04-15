@@ -18,7 +18,7 @@ public class DriverEditor<T,U> : Editor {
     private const int ObjectFieldWidth = 200;
     float PaddingHorizontal = 1;
     float PaddingVertical = 2;
-    ReorderableList MethodList;
+    ReorderableList BindingSourceList;
 
     System.Type TypeMonobehavior = typeof(BindingSourceMonobehaviour);
     System.Type TypeScriptableObject = typeof(BindingSourceScriptableObject);
@@ -56,7 +56,7 @@ public class DriverEditor<T,U> : Editor {
         EditorGUILayout.PropertyField(ModeOfOperationP,new GUIContent("Evaluate Mode"));       
         EditorGUILayout.ObjectField(EvaluatorP,typeof(DriverEvaluator<T,U>),new GUIContent(EvaluatorLabel));
 
-        MethodList.DoLayoutList();
+        BindingSourceList.DoLayoutList();
 
         if(GUILayout.Button("Update")){
             ((Driver<T,U>)target).EditorUpdate();
@@ -71,7 +71,7 @@ public class DriverEditor<T,U> : Editor {
 #region Add New Source Functionality
     private void SetupAddButton()
     {
-        MethodList.onAddDropdownCallback = (Rect buttonRect, ReorderableList l) =>
+        BindingSourceList.onAddDropdownCallback = (Rect buttonRect, ReorderableList l) =>
         {
             var menu = new GenericMenu();
             menu.AddItem(new GUIContent("MonoBehavior"), false, AddNewBindingSource, BindingSourceType.MonoBehaviour);
@@ -85,11 +85,11 @@ public class DriverEditor<T,U> : Editor {
         BindingSourceType type = (BindingSourceType)sourceType;
 
         //show an object selection field based on the whether monobehavior or scriptable object
-        int index = MethodList.serializedProperty.arraySize;
-        MethodList.serializedProperty.arraySize++;
-        MethodList.index = index;
+        int index = BindingSourceList.serializedProperty.arraySize;
+        BindingSourceList.serializedProperty.arraySize++;
+        BindingSourceList.index = index;
 
-        SerializedProperty element = MethodList.serializedProperty.GetArrayElementAtIndex(index);
+        SerializedProperty element = BindingSourceList.serializedProperty.GetArrayElementAtIndex(index);
         element.FindPropertyRelative("ReferenceType").enumValueIndex = (int)type;
 
         serializedObject.ApplyModifiedProperties();
@@ -98,12 +98,12 @@ public class DriverEditor<T,U> : Editor {
 #endregion
     private void CreateReorderableList()
     {
-        MethodList = new ReorderableList(serializedObject, serializedObject.FindProperty("BindingSourcesRaw"), true, true, true, true);
+        BindingSourceList = new ReorderableList(serializedObject, serializedObject.FindProperty("BindingSourcesRaw"), true, true, true, true);
     }
 
     private void SetupReorderableListHeaderDrawer()
     {
-        MethodList.drawHeaderCallback = (Rect rect) =>
+        BindingSourceList.drawHeaderCallback = (Rect rect) =>
         {
             EditorGUI.LabelField(new Rect(rect.x + PaddingHorizontal * 2, rect.y, TypeWidth, rect.height), "Type");
             EditorGUI.LabelField(new Rect(rect.x + TypeWidth + PaddingHorizontal * 3, rect.y, rect.width - TypeWidth - PaddingHorizontal * 3, rect.height), "IBindingSource");
@@ -112,9 +112,9 @@ public class DriverEditor<T,U> : Editor {
     #region binding source element drawing methods
     private void SetupReorderableListElementDrawer()
     {
-        MethodList.drawElementCallback = (Rect rect, int index, bool isActive, bool isFocused) =>
+        BindingSourceList.drawElementCallback = (Rect rect, int index, bool isActive, bool isFocused) =>
         {
-            var element = MethodList.serializedProperty.GetArrayElementAtIndex(index);
+            var element = BindingSourceList.serializedProperty.GetArrayElementAtIndex(index);
 
             EditorGUI.PropertyField(new Rect(rect.x + PaddingHorizontal, rect.y, TypeWidth, rect.y), element.FindPropertyRelative("ReferenceType"), new GUIContent(""));
 
@@ -136,8 +136,8 @@ public class DriverEditor<T,U> : Editor {
                     {
                         if (GUI.Button(new Rect(rect.x + PaddingHorizontal * 3 + ObjectFieldWidth + TypeWidth, rect.y, buttonWidth, rect.height - PaddingVertical), componentName))
                         {
-                            MethodList.index = index;
-                            var menu = CreateAvailableComponentsDropdown(referencedObject);
+                            BindingSourceList.index = index;
+                            var menu = EditorHelper.CreateAvailableComponentsDropdown(referencedObject,typeof(IBindingSource));
                             menu?.ShowAsContext();
                         }
                     }
@@ -145,27 +145,6 @@ public class DriverEditor<T,U> : Editor {
             }
         };
 
-    }
-
-    public GenericMenu CreateAvailableComponentsDropdown(SerializedProperty selectedProperty)
-    {
-        var menu = new GenericMenu();
-        Component currentlySelectedComponent = selectedProperty.objectReferenceValue as Component;
-        if (currentlySelectedComponent == null) return null;
-
-        Component[] components = currentlySelectedComponent.gameObject.GetComponents(typeof(IBindingSource));
-        foreach (Component component in components)
-        {
-            menu.AddItem(new GUIContent(component.ToString()), false, ChangeSource, new SourceChangeInfo() { newSource = component, property = selectedProperty });
-        }
-        return menu;
-    }
-
-    public void ChangeSource(object changeInfo)
-    {
-        SourceChangeInfo changes = ((SourceChangeInfo)changeInfo);
-        changes.property.objectReferenceValue = changes.newSource;
-        serializedObject.ApplyModifiedProperties();
     }
     #endregion
 

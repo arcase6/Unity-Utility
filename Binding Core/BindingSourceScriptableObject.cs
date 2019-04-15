@@ -10,9 +10,9 @@ public abstract class BindingSourceScriptableObject : ScriptableObject, IBinding
 
     [SerializeField]
     [HideInInspector]
-    private VariableType sourceType = VariableType.Unspecified;
-    public VariableType SourceType { get => sourceType; set => sourceType = value; }
-
+    public abstract VariableType SourceType { get; set; }
+    public virtual BindingMode PrefferedMode => BindingMode.SourceToBindingOneWay;
+    public virtual bool LockBindingMode => false;
 
     public void NotifyChange()
     {

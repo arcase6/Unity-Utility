@@ -15,10 +15,10 @@ public class BooleanBindingVariable : BindingSourceScriptableObject
     public bool Value { get => value; set { this.value = value; NotifyChange(); } }
 
    
+    public override VariableType SourceType { get => VariableType.Boolean; set{}} 
 
 
     public override void Init() {
-        SourceType = VariableType.Boolean;
         //don't use property to avoid triggering an event on start
         value = StartingValue;
     }

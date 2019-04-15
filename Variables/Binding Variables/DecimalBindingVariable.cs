@@ -10,8 +10,10 @@ public class DecimalBindingVariable : BindingSourceScriptableObject
     private decimal value;
 
     public decimal Value { get => value; set{ this.value = value; NotifyChange();} }
+
+    public override VariableType SourceType { get => VariableType.Decimal; set{}} 
+
     public override void Init() {
-        this.SourceType = VariableType.Decimal;
         //don't use property to avoid triggering an event on start
         value = StartingValue;
     }

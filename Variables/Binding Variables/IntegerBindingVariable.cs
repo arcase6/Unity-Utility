@@ -10,8 +10,9 @@ public class IntegerBindingVariable : BindingSourceScriptableObject
     private int value;
 
     public int Value { get => value; set{ this.value = value; NotifyChange();} }
+    public override VariableType SourceType { get => VariableType.Integer; set{}} 
+    
     public override void Init() {
-        this.SourceType = VariableType.Integer;
         //don't use property to avoid triggering an event on start
         value = StartingValue;
     }

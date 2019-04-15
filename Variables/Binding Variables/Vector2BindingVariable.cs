@@ -11,8 +11,9 @@ public class Vector2BindingVariable : BindingSourceScriptableObject
     private Vector2 value;
 
     public Vector2 Value { get => value; set{ this.value = value; NotifyChange();} }
+    public override VariableType SourceType { get => VariableType.Vector2; set{}} 
+    
     public override void Init() {
-        this.SourceType = VariableType.Vector2;
         //don't use property to avoid triggering an event on start
         value = StartingValue;
     }

@@ -5,13 +5,17 @@ using ExtensionMethods;
 
 public class AxisBindingSource : BindingSourceMonobehaviour
 {
-    public AxisBindingMode BindingMode;
+    public AxisBindingMode AxisBindingMode;
 
     public Axis AxisToUse;
     public bool InvertValue = false;
 
     public float Offset = 0.00f;
     float previousAxisValue;
+
+    public override BindingMode PrefferedMode => BindingMode.SourceToBindingOneWay;
+
+    public override bool LockBindingMode => false;
 
     private void Awake(){
         this.SourceType = VariableType.Float;
@@ -32,9 +36,9 @@ public class AxisBindingSource : BindingSourceMonobehaviour
     public override float getValueFloat()
     {
         Vector3 position = Vector3.zero;
-        if(BindingMode == AxisBindingMode.WorldSpace) position = transform.position;
-        else if(BindingMode == AxisBindingMode.LocalSpace) position = transform.localPosition;
-        else if(BindingMode == AxisBindingMode.LocalSpaceIgnoreScale)position = transform.position - transform.parent.position;
+        if(AxisBindingMode == AxisBindingMode.WorldSpace) position = transform.position;
+        else if(AxisBindingMode == AxisBindingMode.LocalSpace) position = transform.localPosition;
+        else if(AxisBindingMode == AxisBindingMode.LocalSpaceIgnoreScale)position = transform.position - transform.parent.position;
 
         float axisValue = 0;
         
@@ -92,9 +96,9 @@ public class AxisBindingSource : BindingSourceMonobehaviour
     private void SetValue(float value)
     {
         Vector3 currentPosition = Vector3.zero;
-        if (BindingMode == AxisBindingMode.WorldSpace) currentPosition = transform.position;
-        else if (BindingMode == AxisBindingMode.LocalSpace) currentPosition = transform.localPosition;
-        else if (BindingMode == AxisBindingMode.LocalSpaceIgnoreScale) currentPosition = transform.position - transform.parent.position;
+        if (AxisBindingMode == AxisBindingMode.WorldSpace) currentPosition = transform.position;
+        else if (AxisBindingMode == AxisBindingMode.LocalSpace) currentPosition = transform.localPosition;
+        else if (AxisBindingMode == AxisBindingMode.LocalSpaceIgnoreScale) currentPosition = transform.position - transform.parent.position;
         switch (AxisToUse)
         {
             case Axis.X:
@@ -107,11 +111,11 @@ public class AxisBindingSource : BindingSourceMonobehaviour
                 currentPosition.z = value;
                 break;
         }
-        if (BindingMode == AxisBindingMode.WorldSpace)
+        if (AxisBindingMode == AxisBindingMode.WorldSpace)
             transform.position = currentPosition;
-        else if (BindingMode == AxisBindingMode.LocalSpace)
+        else if (AxisBindingMode == AxisBindingMode.LocalSpace)
             transform.localPosition = currentPosition;
-        else if (BindingMode == AxisBindingMode.LocalSpaceIgnoreScale)
+        else if (AxisBindingMode == AxisBindingMode.LocalSpaceIgnoreScale)
         {
             transform.position = transform.parent.position + currentPosition;
         }

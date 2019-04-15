@@ -10,8 +10,11 @@ public class DoubleBindingVariable : BindingSourceScriptableObject
     private double value;
 
     public double Value { get => value; set{ this.value = value; NotifyChange();} }
+    
+    public override VariableType SourceType { get => VariableType.Double; set{}} 
+
+    
     public override void Init() {
-        this.SourceType = VariableType.Double;
         //don't use property to avoid triggering an event on start
         value = StartingValue;
     }

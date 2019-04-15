@@ -6,120 +6,90 @@ using System.Linq;
 public class BindingEditor : Editor
 {
     #region cached variables
-    string[] availableComponentNames = null;
-    bool twoWayRequired = false;
-    BindingMode modeToLockTo;
+
+    System.Type MonoBehaviorType = typeof(BindingSourceMonobehaviour);
+    System.Type ScriptableObjectType = typeof(BindingSourceScriptableObject);
+
+    SerializedProperty SourceRawP;
+    SerializedProperty SourceRawObjectP;
+    SerializedProperty SourceRawTypeP;
+    SerializedProperty BindingModeP;
+
     #endregion
 
     [ExecuteInEditMode]
     private void OnEnable()
     {
+        SourceRawP = serializedObject.FindProperty("SourceRaw");
+        SourceRawObjectP = SourceRawP.FindPropertyRelative("ObjectReference");
+        SourceRawTypeP = SourceRawP.FindPropertyRelative("ReferenceType");
+        BindingModeP = serializedObject.FindProperty("BindingMode");
         serializedObject.Update();
-        IBindingSource source = GetBindingSource(serializedObject.FindProperty("SourceRef").objectReferenceValue);
-        if (source != null)
-            twoWayRequired = source.isModeLocked(ref modeToLockTo);
-        if (twoWayRequired)
-            serializedObject.FindProperty("BindingMode").enumValueIndex = (int)modeToLockTo;
-
-        serializedObject.ApplyModifiedProperties();
-    }
-
-    private IBindingSource GetBindingSource(Object sourceReference)
-    {
-        if (sourceReference == null)
-            return null;
-        IBindingSource source;
-        if (serializedObject.FindProperty("SourceType").enumValueIndex == (int)BindingSourceType.MonoBehaviour)
-        {
-            int componentIndex = serializedObject.FindProperty("SelectedComponentIndex").intValue;
-            IBindingSource[] bindingSources = ((MonoBehaviour)sourceReference).GetComponents<IBindingSource>();
-            source = bindingSources.Length > componentIndex ? bindingSources[componentIndex] : null;
-            if(source == null){
-                serializedObject.FindProperty("SelectedComponentIndex").intValue = 0;
-            }
-        }
-        else
-        {
-            source = sourceReference as IBindingSource;
-        }
-
-        return source;
+        CheckBindingModeConstraints();
     }
 
     public override void OnInspectorGUI()
     {
         base.OnInspectorGUI();
 
+        EditorGUI.BeginChangeCheck();
         ShowSourceSelectionControls();
-        ShowBindingOptions();
-        ShowTwoWayControl();
+        if (EditorGUI.EndChangeCheck()){
+            serializedObject.ApplyModifiedProperties();
+            serializedObject.Update();
+            CheckBindingModeConstraints();
+        }
+        ShowBindingModeDropdown();
 
         serializedObject.ApplyModifiedProperties();
     }
 
-    private void ShowSourceSelectionControls()
+    private void CheckBindingModeConstraints()
     {
-        SerializedProperty sourceType = serializedObject.FindProperty("SourceType");
-
-        EditorGUI.BeginChangeCheck();
-        int newValue = (int)(BindingSourceType)EditorGUILayout.EnumPopup("Source Type", (BindingSourceType)sourceType.enumValueIndex);
-        bool typeChanged = newValue != sourceType.enumValueIndex;
-        sourceType.enumValueIndex = newValue;
-
-        System.Type typeToSearchFor = sourceType.enumValueIndex == (int)BindingSourceType.MonoBehaviour ? typeof(BindingSourceMonobehaviour) : typeof(BindingSourceScriptableObject);
-        EditorGUILayout.ObjectField(serializedObject.FindProperty("SourceRef"), typeToSearchFor);
-
-        if (EditorGUI.EndChangeCheck())
+        if (SourceRawObjectP.objectReferenceValue != null)
         {
-            serializedObject.FindProperty("SelectedComponentIndex").intValue = 0;
-            availableComponentNames = null;
-            if (typeChanged)
-                serializedObject.FindProperty("SourceRef").objectReferenceValue = null;
+            IBindingSource source = (SourceRawObjectP.objectReferenceValue as IBindingSource);
+            if (source.LockBindingMode)
+                BindingModeP.enumValueIndex = (int)source.PrefferedMode;
         }
     }
 
-    private void ShowBindingOptions()
+    private void ShowSourceSelectionControls()
     {
-        SerializedProperty sourceRef = serializedObject.FindProperty("SourceRef");
-        SerializedProperty componentIndex = serializedObject.FindProperty("SelectedComponentIndex");
+        EditorGUILayout.BeginHorizontal();
+        EditorGUILayout.LabelField("Binding Type");
+        EditorGUILayout.LabelField("Source Reference");
+        EditorGUILayout.EndHorizontal();
+        EditorGUILayout.BeginHorizontal();
+        EditorGUILayout.PropertyField(SourceRawTypeP, new GUIContent(""));
 
-        MonoBehaviour sourceReference = sourceRef.objectReferenceValue as MonoBehaviour;
-        if (sourceReference != null)
+        System.Type typeToSearchFor = SourceRawTypeP.enumValueIndex == (int)BindingSourceType.ScriptableObject ? ScriptableObjectType : MonoBehaviorType;
+
+        EditorGUILayout.ObjectField(SourceRawObjectP, typeToSearchFor, new GUIContent(""));
+
+        EditorGUILayout.EndHorizontal();
+        if (typeToSearchFor == MonoBehaviorType)
         {
-            bool componentsChanged = availableComponentNames == null;
-            if (GUILayout.Button("Refresh Source Options") || componentsChanged)
-                RegenerateComponentNames(sourceReference);
-
-            EditorGUI.BeginChangeCheck();
-            componentIndex.intValue = EditorGUILayout.Popup("Source", componentIndex.intValue, availableComponentNames);
-            componentsChanged = componentsChanged || EditorGUI.EndChangeCheck();
-
-            //if the index changed from the popup or the source was changed earlier
-            if (componentsChanged && componentIndex.intValue < availableComponentNames.Length)
+            Component referencedComponent = SourceRawObjectP.objectReferenceValue as Component;
+            string componentName = referencedComponent == null ? "None" : referencedComponent.ToString();
+            using (new EditorGUI.DisabledGroupScope(referencedComponent == null))
             {
-                IBindingSource source = sourceReference.GetComponents<IBindingSource>()[componentIndex.intValue];
-                twoWayRequired = source.isModeLocked(ref modeToLockTo);
+                if (GUILayout.Button(componentName))
+                {
+                    var menu = EditorHelper.CreateAvailableComponentsDropdown(SourceRawObjectP, typeof(IBindingSource));
+                    menu?.ShowAsContext();
+                }
             }
         }
     }
 
-    private void ShowTwoWayControl()
+    private void ShowBindingModeDropdown()
     {
-        SerializedProperty bindingMode = serializedObject.FindProperty("BindingMode");
+        IBindingSource source = SourceRawObjectP.objectReferenceValue as IBindingSource;
 
-        if (twoWayRequired) //two way binding is not editable for some binding sources
-           bindingMode.enumValueIndex = (int)BindingMode.TwoWay;
-        else
-            bindingMode.enumValueIndex = (int)(BindingMode)EditorGUILayout.EnumPopup("Binding　Mode", (BindingMode)bindingMode.enumValueIndex);
-            
-    }
-
-    private void RegenerateComponentNames(MonoBehaviour objectReferenceValue)
-    {
-        availableComponentNames = objectReferenceValue.GetComponents<IBindingSource>().Select(b => b.ToString()).ToArray();
-        for (int i = 0; i < availableComponentNames.Length; i++)
+        using (new EditorGUI.DisabledGroupScope(source == null || source.LockBindingMode))
         {
-            availableComponentNames[i] = availableComponentNames[i] + " (" + i + ")";
+            EditorGUILayout.PropertyField(BindingModeP);
         }
     }
 
