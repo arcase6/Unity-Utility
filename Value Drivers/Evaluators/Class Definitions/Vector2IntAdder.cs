@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Vector2IntAdder", menuName = "Driver Evaluators/Vector2Int/Adder", order = 0)]
-public class Vector2IntAdder : DriverEvaluator<Vector2Int>
+public class Vector2IntAdder : DriverEvaluator<Vector2Int, Vector2Int>
 {
 
     public override Vector2Int Evaluate(List<Vector2Int> sourceValues)

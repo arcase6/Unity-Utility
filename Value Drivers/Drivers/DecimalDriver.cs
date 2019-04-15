@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class DecimalDriver : Driver<decimal>
+public class DecimalDriver : Driver<decimal,decimal>
 {
 
     [SerializeField]
@@ -19,7 +19,7 @@ public class DecimalDriver : Driver<decimal>
         }
     }
 
-    public override decimal GetSourceValue()
+    public override decimal GetTargetValue()
     {
         if(this.BindingSources.Count == 1)
             return BindingSources[0].getValueDecimal();

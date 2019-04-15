@@ -2,7 +2,7 @@
 using UnityEditor;
 
 [CustomEditor(typeof(DecimalDriver))]
-public class DecimalDriverEditor : DriverEditor<decimal> {
+public class DecimalDriverEditor : DriverEditor<decimal,decimal> {
 
     SerializedProperty OffsetP;
 

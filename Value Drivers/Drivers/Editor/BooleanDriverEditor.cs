@@ -2,7 +2,7 @@
 using UnityEditor;
 
 [CustomEditor(typeof(BooleanDriver))]
-public class BooleanDriverEditor : DriverEditor<bool> {
+public class BooleanDriverEditor : DriverEditor<bool,bool> {
 
     SerializedProperty InvertSettingP;
 

@@ -2,7 +2,7 @@
 using UnityEditor;
 
 [CustomEditor(typeof(Vector2Driver))]
-public class Vector2DriverEditor: DriverEditor<Vector2> {
+public class Vector2DriverEditor: DriverEditor<Vector2,Vector2> {
     
     SerializedProperty OffsetP;
 

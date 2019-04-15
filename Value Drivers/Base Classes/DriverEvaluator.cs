@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public abstract class DriverEvaluator<T> :  ScriptableObject{
-    public abstract T Evaluate(List<T> sourceValues);
+public abstract class DriverEvaluator<T,U> :  ScriptableObject{
+    public abstract U Evaluate(List<T> sourceValues);
 
-    public abstract T Evaluate(List<object> sourceValues);
+    public abstract U Evaluate(List<object> sourceValues);
 
     public Type GetEvaluationType()
     {

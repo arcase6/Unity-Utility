@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class BooleanDriver : Driver<bool>
+public class BooleanDriver : Driver<bool,bool>
 {
 
     [SerializeField]
@@ -19,7 +19,7 @@ public class BooleanDriver : Driver<bool>
         }
     }
 
-    public override bool GetSourceValue()
+    public override bool GetTargetValue()
     {
         if(this.BindingSources.Count > 1){
             return BindingSources[0].getValueBoolean() ^ InvertValue;

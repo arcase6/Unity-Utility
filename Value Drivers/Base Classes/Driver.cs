@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public abstract class Driver<T> : MonoBehaviour, IListener, ISerializationCallbackReceiver
+public abstract class Driver<T,U> : MonoBehaviour, IListener, ISerializationCallbackReceiver
 {
     protected bool UpdateFlag;
 
@@ -22,8 +22,8 @@ public abstract class Driver<T> : MonoBehaviour, IListener, ISerializationCallba
     [SerializeField]
     private ScriptableObject DriverEvaluatorSerializable;
 
-    public DriverEvaluator<T> DriverEvaluator;
-    private System.Action<T> SetTargetProp;
+    public DriverEvaluator<T,U> DriverEvaluator;
+    private System.Action<U> SetTargetProp;
 
     public virtual void Start()
     {
@@ -69,9 +69,10 @@ public abstract class Driver<T> : MonoBehaviour, IListener, ISerializationCallba
     }
 
 
-    public abstract T GetSourceValue();
+    public abstract U GetTargetValue();
 
     public abstract List<T> GetSourceValues();
+
 
     public System.Type GetAllowedType()
     {
@@ -105,13 +106,13 @@ public abstract class Driver<T> : MonoBehaviour, IListener, ISerializationCallba
                 switch (this.ModeOfOperation)
                 {
                     case DriverMode.Identity:
-                        this.SetTargetProp(GetSourceValue());
+                        this.SetTargetProp(GetTargetValue());
                         break;
                     case DriverMode.UseEvaluater:
                         this.SetTargetProp(this.DriverEvaluator.Evaluate(GetSourceValues()));
                         break;
                     case DriverMode.UseEvaluaterComplexSources:
-                        this.SetTargetProp((T)this.DriverEvaluator.Evaluate(GetSourceValuesAsObjects()));
+                        this.SetTargetProp((U)this.DriverEvaluator.Evaluate(GetSourceValuesAsObjects()));
                         break;
                 }
             }
@@ -129,15 +130,15 @@ public abstract class Driver<T> : MonoBehaviour, IListener, ISerializationCallba
         try
         {
             System.Reflection.PropertyInfo info = DriveTarget.GetType().GetProperty(TargetProperty);
-            if (info.PropertyType != typeof(T))
-                throw new System.InvalidOperationException("The source is not of type " + typeof(T).ToString());
-            this.SetTargetProp = (System.Action<T>)System.Delegate.CreateDelegate(typeof(System.Action<T>), DriveTarget, info.GetSetMethod());
+            if (info.PropertyType != typeof(U))
+                throw new System.InvalidOperationException("The target is not of type " + typeof(U).ToString());
+            this.SetTargetProp = (System.Action<U>)System.Delegate.CreateDelegate(typeof(System.Action<U>), DriveTarget, info.GetSetMethod());
 
         }
         catch
         {
             if (TargetProperty == null || TargetProperty == "")
-                Debug.Log("Faild to bind to drive target.There is no Target Property specified.");
+                Debug.Log("Failed to bind to drive target.There is no Target Property specified.");
             else
                 Debug.Log("Failed to bind to drive target :" + TargetProperty + ". Make sure that the property exists and is type " + typeof(T).Name, this);
             return false;
@@ -169,7 +170,7 @@ public abstract class Driver<T> : MonoBehaviour, IListener, ISerializationCallba
 
     public void OnAfterDeserialize()
     {
-        this.DriverEvaluator = DriverEvaluatorSerializable as DriverEvaluator<T>;
+        this.DriverEvaluator = DriverEvaluatorSerializable as DriverEvaluator<T,U>;
         BindingSources = BindingSourcesRaw.Select(b => b.ObjectReference as IBindingSource).ToList();
     }
 }

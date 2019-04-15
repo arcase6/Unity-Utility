@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "FloatAdder", menuName = "Driver Evaluators/Floats/Adder", order = 0)]
-public class FloatAdder : DriverEvaluator<float>
+public class FloatAdder : DriverEvaluator<float,float>
 {
 
     public override float Evaluate(List<float> sourceValues)

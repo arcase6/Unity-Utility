@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "DecimalAdder", menuName = "Driver Evaluators/Decimals/Adder", order = 0)]
-public class DecimalAdder : DriverEvaluator<decimal>
+public class DecimalAdder : DriverEvaluator<decimal,decimal>
 {
 
     public override decimal Evaluate(List<decimal> sourceValues)

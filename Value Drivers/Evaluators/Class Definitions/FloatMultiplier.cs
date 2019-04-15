@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "FloatMultiplier", menuName = "Driver Evaluators/Floats/Multiplier", order = 0)]
-public class FloatMultiplier : DriverEvaluator<float>
+public class FloatMultiplier : DriverEvaluator<float,float>
 {
     public bool MultiplyByConstant;
     public float ScaleFactor;

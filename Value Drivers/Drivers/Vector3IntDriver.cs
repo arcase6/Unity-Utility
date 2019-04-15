@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class Vector3IntDriver : Driver<Vector3Int>
+public class Vector3IntDriver : Driver<Vector3Int,Vector3Int>
 {
 
     [SerializeField]
@@ -20,7 +20,7 @@ public class Vector3IntDriver : Driver<Vector3Int>
     }
 
 
-    public override Vector3Int GetSourceValue()
+    public override Vector3Int GetTargetValue()
     {
         if(BindingSources.Count == 1)
             return BindingSources[0].getValueVector3Int() + offset;

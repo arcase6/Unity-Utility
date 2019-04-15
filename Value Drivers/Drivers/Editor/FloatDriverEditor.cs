@@ -2,7 +2,7 @@
 using UnityEditor;
 
 [CustomEditor(typeof(FloatDriver))]
-public class FloatDriverEditor : DriverEditor<float> {
+public class FloatDriverEditor : DriverEditor<float,float> {
 
     SerializedProperty OffsetP;
 

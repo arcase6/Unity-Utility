@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class StringDriver : Driver<string>
+public class StringDriver : Driver<string,string>
 {
     
 
-    public override string GetSourceValue()
+    public override string GetTargetValue()
     {
         if(this.BindingSources.Count == 1)
             return BindingSources[0].getValueString();

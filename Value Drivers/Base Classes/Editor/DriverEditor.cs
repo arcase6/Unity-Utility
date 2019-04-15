@@ -4,7 +4,7 @@ using System.Linq;
 using System;
 using UnityEditorInternal;
 
-public class DriverEditor<T> : Editor {  
+public class DriverEditor<T,U> : Editor {  
     
     string[] PropertyNameOptions;
    
@@ -54,12 +54,12 @@ public class DriverEditor<T> : Editor {
         DrawTargetSelectionFields();
 
         EditorGUILayout.PropertyField(ModeOfOperationP,new GUIContent("Evaluate Mode"));       
-        EditorGUILayout.ObjectField(EvaluatorP,typeof(DriverEvaluator<T>),new GUIContent(EvaluatorLabel));
+        EditorGUILayout.ObjectField(EvaluatorP,typeof(DriverEvaluator<T,U>),new GUIContent(EvaluatorLabel));
 
         MethodList.DoLayoutList();
 
         if(GUILayout.Button("Update")){
-            ((Driver<T>)target).EditorUpdate();
+            ((Driver<T,U>)target).EditorUpdate();
         }
 
         serializedObject.ApplyModifiedProperties();

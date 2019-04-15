@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class DoubleDriver : Driver<double>
+public class DoubleDriver : Driver<double,double>
 {
 
     [SerializeField]
@@ -19,7 +19,7 @@ public class DoubleDriver : Driver<double>
         }
     }
 
-    public override double GetSourceValue()
+    public override double GetTargetValue()
     {
         if(this.BindingSources.Count == 1)
             return BindingSources[0].getValueDouble();

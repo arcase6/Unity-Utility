@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class FloatDriver : Driver<float>
+public class FloatDriver : Driver<float,float>
 {
 
     [SerializeField]
@@ -19,7 +19,7 @@ public class FloatDriver : Driver<float>
         }
     }
 
-    public override float GetSourceValue()
+    public override float GetTargetValue()
     {
         if(this.BindingSources.Count == 1)
             return BindingSources[0].getValueFloat();

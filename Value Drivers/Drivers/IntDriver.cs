@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class IntegerDriver : Driver<int>
+public class IntegerDriver : Driver<int,int>
 {
 
     [SerializeField]
@@ -19,7 +19,7 @@ public class IntegerDriver : Driver<int>
         }
     }
 
-    public override int GetSourceValue()
+    public override int GetTargetValue()
     {
         if(this.BindingSources.Count == 1)
             return BindingSources[0].getValueInteger();

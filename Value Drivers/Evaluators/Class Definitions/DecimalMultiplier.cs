@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "DecimalMultiplier", menuName = "Driver Evaluators/Decimals/Multiplier", order = 0)]
-public class DecimalMultiplier : DriverEvaluator<decimal>
+public class DecimalMultiplier : DriverEvaluator<decimal,decimal>
 {
     public bool MultiplyByConstant;
     public decimal ScaleFactor;

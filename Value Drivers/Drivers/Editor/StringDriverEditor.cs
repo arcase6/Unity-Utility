@@ -2,7 +2,7 @@
 using UnityEditor;
 
 [CustomEditor(typeof(StringDriver))]
-public class StringDriverEditor : DriverEditor<string> {
+public class StringDriverEditor : DriverEditor<string,string> {
 
 
     public override void OnEnable()

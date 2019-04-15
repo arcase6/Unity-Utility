@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "DoubleAdder", menuName = "Driver Evaluators/Doubles/Adder", order = 0)]
-public class DoubleAdder : DriverEvaluator<double>
+public class DoubleAdder : DriverEvaluator<double,double>
 {
 
     public override double Evaluate(List<double> sourceValues)

@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "DoubleMultiplier", menuName = "Driver Evaluators/Doubles/Multiplier", order = 0)]
-public class DoubleMultiplier : DriverEvaluator<double>
+public class DoubleMultiplier : DriverEvaluator<double,double>
 {
     public bool MultiplyByConstant;
     public double ScaleFactor;
