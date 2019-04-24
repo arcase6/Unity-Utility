@@ -19,19 +19,16 @@ public class DecimalDriver : Driver<decimal,decimal>
         }
     }
 
-    public override decimal GetTargetValue()
+    public override decimal GetTargetValueStandard()
     {
-        if(this.BindingSources.Count == 1)
-            return BindingSources[0].getValueDecimal();
-        else if(this.BindingSources.Count > 1)
+        if(SourceCount == 1)
+            return BindingSources.First().getValueDecimal();
+        else if(SourceCount > 1)
             return BindingSources.Average(b => b.getValueDecimal());
         else
             throw new System.NullReferenceException("There are no sources defined for this driver.");
         
     }
 
-    public override List<decimal> GetSourceValues()
-    {
-        return BindingSources.Select(b => b.getValueDecimal()).ToList();
-    }
+    
 }

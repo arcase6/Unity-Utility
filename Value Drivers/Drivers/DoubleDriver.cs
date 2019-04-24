@@ -19,19 +19,16 @@ public class DoubleDriver : Driver<double,double>
         }
     }
 
-    public override double GetTargetValue()
+    public override double GetTargetValueStandard()
     {
-        if(this.BindingSources.Count == 1)
-            return BindingSources[0].getValueDouble();
-        else if(this.BindingSources.Count > 1)
+        if(SourceCount == 1)
+            return BindingSources.First().getValueDouble();
+        else if(SourceCount > 1)
             return BindingSources.Average(b => b.getValueDouble());
         else
             throw new System.NullReferenceException("There are no sources defined for this driver.");
         
     }
 
-    public override List<double> GetSourceValues()
-    {
-        return BindingSources.Select(b => b.getValueDouble()).ToList();
-    }
+    
 }

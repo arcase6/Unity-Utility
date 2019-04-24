@@ -19,19 +19,16 @@ public class FloatDriver : Driver<float,float>
         }
     }
 
-    public override float GetTargetValue()
+    public override float GetTargetValueStandard()
     {
-        if(this.BindingSources.Count == 1)
-            return BindingSources[0].getValueFloat();
-        else if(this.BindingSources.Count > 1)
+        if(SourceCount == 1)
+            return BindingSources.First().getValueFloat();
+        else if(SourceCount > 1)
             return BindingSources.Average(b => b.getValueFloat());
         else
             throw new System.NullReferenceException("There are no sources defined for this driver.");
         
     }
 
-    public override List<float> GetSourceValues()
-    {
-        return BindingSources.Select(b => b.getValueFloat()).ToList();
-    }
+    
 }

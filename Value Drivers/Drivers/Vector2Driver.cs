@@ -20,25 +20,22 @@ public class Vector2Driver : Driver<Vector2,Vector2>
     }
 
 
-    public override Vector2 GetTargetValue()
+    public override Vector2 GetTargetValueStandard()
     {
-        if(BindingSources.Count == 1)
-            return BindingSources[0].getValueVector2() + offset;
-        else if(BindingSources.Count > 1){
+        if(SourceCount == 1)
+            return BindingSources.First().getValueVector2() + offset;
+        else if(SourceCount> 1){
             Vector2 sum = Vector2.zero;
             foreach(IBindingSource source in BindingSources){
                 sum += source.getValueVector2();
             }
-            sum = sum / BindingSources.Count;
+            sum = sum / SourceCount;
             return sum + offset;
         }
         else
             throw new System.NullReferenceException("There are no sources defined for this driver.");            
     }
 
-    public override List<Vector2> GetSourceValues()
-    {
-        return BindingSources.Select(b => b.getValueVector2()).ToList();
-    }
+    
 }
 

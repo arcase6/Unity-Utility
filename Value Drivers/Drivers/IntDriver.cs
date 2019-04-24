@@ -19,25 +19,22 @@ public class IntegerDriver : Driver<int,int>
         }
     }
 
-    public override int GetTargetValue()
+    public override int GetTargetValueStandard()
     {
-        if(this.BindingSources.Count == 1)
-            return BindingSources[0].getValueInteger();
-        else if(this.BindingSources.Count > 1){
+        if(SourceCount == 1)
+            return BindingSources.First().getValueInteger();
+        else if(SourceCount > 1){
             int sum = 0;
             foreach(IBindingSource b in BindingSources){
                 sum += b.getValueInteger();
             }          
-            return sum / BindingSources.Count;
+            return sum / SourceCount;
         }
         else
             throw new System.NullReferenceException("There are no sources defined for this driver.");
         
     }
 
-    public override List<int> GetSourceValues()
-    {
-        return BindingSources.Select(b => b.getValueInteger()).ToList();
-    }
+    
 
 }

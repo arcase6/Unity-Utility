@@ -27,7 +27,7 @@ public class Vector3DriverEditor: DriverEditor<Vector3,Vector3> {
                  Debug.Log("Flag flipped");
                 ((Vector3Driver)target).SetUpdateFlag(true); 
             }
-            else if(((Vector3Driver)target).BindingSources.Count > 0){
+            else if(((Vector3Driver)target).SourceCount > 0){
                 ((Vector3Driver)target).EditorUpdate();  
             }
         }

@@ -20,25 +20,22 @@ public class Vector3IntDriver : Driver<Vector3Int,Vector3Int>
     }
 
 
-    public override Vector3Int GetTargetValue()
+    public override Vector3Int GetTargetValueStandard()
     {
-        if(BindingSources.Count == 1)
-            return BindingSources[0].getValueVector3Int() + offset;
-        else if(BindingSources.Count > 1){
+        if(SourceCount == 1)
+            return BindingSources.First().getValueVector3Int() + offset;
+        else if(SourceCount > 1){
             Vector3Int sum = Vector3Int.zero;
             foreach(IBindingSource source in BindingSources){
                 sum += source.getValueVector3Int();
             }
-            sum = new Vector3Int(sum.x/BindingSources.Count, sum.y/BindingSources.Count, sum.z/BindingSources.Count);
+            sum = new Vector3Int(sum.x/SourceCount, sum.y/SourceCount, sum.z/SourceCount);
             return sum + offset;
         }
         else
             throw new System.NullReferenceException("There are no sources defined for this driver.");            
     }
 
-    public override List<Vector3Int> GetSourceValues()
-    {
-        return BindingSources.Select(b => b.getValueVector3Int()).ToList();
-    }
+    
 }
 

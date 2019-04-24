@@ -7,11 +7,11 @@ public class StringDriver : Driver<string,string>
 {
     
 
-    public override string GetTargetValue()
+    public override string GetTargetValueStandard()
     {
-        if(this.BindingSources.Count == 1)
-            return BindingSources[0].getValueString();
-        else if(this.BindingSources.Count > 1){
+        if(this.SourceCount == 1)
+            return BindingSources.First().getValueString();
+        else if(this.SourceCount > 1){
             string appendedString = "";
             foreach(IBindingSource b in BindingSources){
                 appendedString +=b.getValueString();
@@ -23,8 +23,5 @@ public class StringDriver : Driver<string,string>
         
     }
 
-    public override List<string> GetSourceValues()
-    {
-        return BindingSources.Select(b => b.getValueString()).ToList();
-    }
+    
 }

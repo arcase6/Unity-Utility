@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+
 public abstract class Driver<T,U> : MonoBehaviour, IListener, ISerializationCallbackReceiver
 {
     protected bool UpdateFlag;
@@ -10,13 +11,21 @@ public abstract class Driver<T,U> : MonoBehaviour, IListener, ISerializationCall
     public Component DriveTarget;
     public string TargetProperty;
 
+    public bool AverageSourceValues;
 
-    [SerializeField]
-    private List<BindingSourceData> BindingSourcesRaw = new List<BindingSourceData>();
-    public List<IBindingSource> BindingSources;
+    public List<BindingSourceData> BindingSourcesFull = new List<BindingSourceData>();
+    
+    public IEnumerable<IBindingSource> BindingSources{
+        get{
+            return BindingSourcesFull.Select(b => b.RuntimeBindingSource);
+        }
+    }
+
+    public int SourceCount{
+        get{return BindingSourcesFull.Count;}
+    }
 
 
-    public DriverMode ModeOfOperation;
 
     [HideInInspector]
     [SerializeField]
@@ -24,6 +33,8 @@ public abstract class Driver<T,U> : MonoBehaviour, IListener, ISerializationCall
 
     public DriverEvaluator<T,U> DriverEvaluator;
     private System.Action<U> SetTargetProp;
+    
+
 
     public virtual void Start()
     {
@@ -36,21 +47,22 @@ public abstract class Driver<T,U> : MonoBehaviour, IListener, ISerializationCall
     {
         foreach (IBindingSource source in BindingSources)
         {
-            source.AddListener(this);
+            source?.AddListener(this);
         }
+        this.UpdateFlag = true;
     }
 
     private void OnDisable()
     {
         foreach (IBindingSource source in BindingSources)
         {
-            source.RemoveListener(this);
+            source?.RemoveListener(this);
         }
     }
 
     public void EditorUpdate()
     {
-        if (BindingSources.Count > 0)
+        if (SourceCount > 0)
         {
             if (this.SetupPropertyDelegates())
             {
@@ -69,9 +81,8 @@ public abstract class Driver<T,U> : MonoBehaviour, IListener, ISerializationCall
     }
 
 
-    public abstract U GetTargetValue();
+    public abstract U GetTargetValueStandard();
 
-    public abstract List<T> GetSourceValues();
 
 
     public System.Type GetAllowedType()
@@ -86,6 +97,7 @@ public abstract class Driver<T,U> : MonoBehaviour, IListener, ISerializationCall
 
     public List<object> GetSourceValuesAsObjects()
     {
+        
         return this.BindingSources.Select(b => b.getValueAsObject()).ToList();
     }
 
@@ -103,18 +115,8 @@ public abstract class Driver<T,U> : MonoBehaviour, IListener, ISerializationCall
             if (UpdateFlag)
             {
                 UpdateFlag = false;
-                switch (this.ModeOfOperation)
-                {
-                    case DriverMode.Identity:
-                        this.SetTargetProp(GetTargetValue());
-                        break;
-                    case DriverMode.UseEvaluater:
-                        this.SetTargetProp(this.DriverEvaluator.Evaluate(GetSourceValues()));
-                        break;
-                    case DriverMode.UseEvaluaterComplexSources:
-                        this.SetTargetProp((U)this.DriverEvaluator.Evaluate(GetSourceValuesAsObjects()));
-                        break;
-                }
+                U value = GenerateDriveValue();
+                this.SetTargetProp(value);
             }
         }
         catch (System.Exception e)
@@ -123,7 +125,16 @@ public abstract class Driver<T,U> : MonoBehaviour, IListener, ISerializationCall
         }
     }
 
-    public bool SetupPropertyDelegates()
+    protected virtual U GenerateDriveValue()
+    {
+        if(this.DriverEvaluator == null)
+            return GetTargetValueStandard();
+        else{
+            throw new System.NotImplementedException(); //need to rewrite evaluators (they should now only have a single method)
+        }
+    }
+
+    public virtual bool SetupPropertyDelegates()
     {
         if (this.DriveTarget == null || this.TargetProperty == null)
             return false;
@@ -147,30 +158,19 @@ public abstract class Driver<T,U> : MonoBehaviour, IListener, ISerializationCall
         return true;
     }
 
+    public void ResetSourceList(){
+        this.BindingSourcesFull.Clear();
+    }
+
     public void OnBeforeSerialize()
     {
-        this.DriverEvaluatorSerializable = this.DriverEvaluator;
-        if (BindingSources != null && BindingSources.Count > 0)
-        {
-            if (!BindingSources.Any(b => b == null))
-            {
-                BindingSourcesRaw = BindingSources.Select(b =>
-                {
-                    BindingSourceType sourceType = (b as BindingSourceScriptableObject == null) ? BindingSourceType.MonoBehaviour : BindingSourceType.ScriptableObject;
-                    //Debug.Log(sourceType.ToString());
-                    return new BindingSourceData() { ObjectReference = b as Object, ReferenceType = sourceType };
-                }).ToList();
-            }
-        }
-        else
-        {
-            BindingSourcesRaw = new List<BindingSourceData>();
-        }
+        
     }
 
     public void OnAfterDeserialize()
     {
-        this.DriverEvaluator = DriverEvaluatorSerializable as DriverEvaluator<T,U>;
-        BindingSources = BindingSourcesRaw.Select(b => b.ObjectReference as IBindingSource).ToList();
+        foreach(BindingSourceData bindingSource in BindingSourcesFull){
+            bindingSource.RuntimeBindingSource = bindingSource.ObjectReference as IBindingSource;
+        }
     }
 }

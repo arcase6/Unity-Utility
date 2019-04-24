@@ -12,17 +12,18 @@ public class DriverEditor<T,U> : Editor {
     private SerializedProperty TargetP;
     private SerializedProperty PropertyNameP;
     private SerializedProperty EvaluatorP;
+    private SerializedProperty AggregateSourcesP;
     SerializedProperty ModeOfOperationP;
 
     private const int TypeWidth = 110;
-    private const int ObjectFieldWidth = 200;
-    float PaddingHorizontal = 1;
-    float PaddingVertical = 2;
+    private const int ObjectFieldWidth = 150;
+    private const int InvertBoxWidth =20;
     ReorderableList BindingSourceList;
 
     System.Type TypeMonobehavior = typeof(BindingSourceMonobehaviour);
     System.Type TypeScriptableObject = typeof(BindingSourceScriptableObject);
-    private System.Type allowedTargetType = typeof(T);
+    private System.Type allowedTargetType = typeof(U);
+    private System.Type allowedSourceType = typeof(T);
     private string EvaluatorLabel;
 
 #region Unity Magic Methods
@@ -31,12 +32,14 @@ public class DriverEditor<T,U> : Editor {
     {
         if (target == null) return;
         string typeName = allowedTargetType.Name.Split('.').Last();
-        EvaluatorLabel = "Evaluator<" + typeName +">";
+        string sourceName = allowedSourceType.Name.Split('.').Last();
+        EvaluatorLabel = "Evaluator<" + sourceName + ", " + typeName +">";
         ModeOfOperationP = serializedObject.FindProperty("ModeOfOperation");
         PropertyNameP = serializedObject.FindProperty("TargetProperty");
         TargetP = serializedObject.FindProperty("DriveTarget");
         EvaluatorP = serializedObject.FindProperty("DriverEvaluatorSerializable");
-        
+        AggregateSourcesP = serializedObject.FindProperty("AverageSourceValues");
+
         CreateReorderableList();
         SetupReorderableListHeaderDrawer();
         SetupReorderableListElementDrawer();
@@ -49,18 +52,23 @@ public class DriverEditor<T,U> : Editor {
 
     public override void OnInspectorGUI()
     {
-        serializedObject.Update();
-
-        DrawTargetSelectionFields();
-
-        EditorGUILayout.PropertyField(ModeOfOperationP,new GUIContent("Evaluate Mode"));       
-        EditorGUILayout.ObjectField(EvaluatorP,typeof(DriverEvaluator<T,U>),new GUIContent(EvaluatorLabel));
-
-        BindingSourceList.DoLayoutList();
-
         if(GUILayout.Button("Update")){
             ((Driver<T,U>)target).EditorUpdate();
         }
+        serializedObject.Update();
+
+        DrawTargetSelectionFields();
+   
+        EditorGUILayout.ObjectField(EvaluatorP,typeof(DriverEvaluator<T,U>),new GUIContent(EvaluatorLabel));
+
+        if(BindingSourceList.count > 1){
+            EditorGUILayout.PropertyField(AggregateSourcesP);
+        }
+
+        BindingSourceList.DoLayoutList();
+
+        
+        
 
         serializedObject.ApplyModifiedProperties();
     }
@@ -91,6 +99,7 @@ public class DriverEditor<T,U> : Editor {
 
         SerializedProperty element = BindingSourceList.serializedProperty.GetArrayElementAtIndex(index);
         element.FindPropertyRelative("ReferenceType").enumValueIndex = (int)type;
+        element.FindPropertyRelative("ObjectReference").objectReferenceValue = null;
 
         serializedObject.ApplyModifiedProperties();
     }
@@ -98,15 +107,20 @@ public class DriverEditor<T,U> : Editor {
 #endregion
     private void CreateReorderableList()
     {
-        BindingSourceList = new ReorderableList(serializedObject, serializedObject.FindProperty("BindingSourcesRaw"), true, true, true, true);
+        BindingSourceList = new ReorderableList(serializedObject, serializedObject.FindProperty("BindingSourcesFull"), true, true, true, true);
     }
 
     private void SetupReorderableListHeaderDrawer()
     {
         BindingSourceList.drawHeaderCallback = (Rect rect) =>
         {
-            EditorGUI.LabelField(new Rect(rect.x + PaddingHorizontal * 2, rect.y, TypeWidth, rect.height), "Type");
-            EditorGUI.LabelField(new Rect(rect.x + TypeWidth + PaddingHorizontal * 3, rect.y, rect.width - TypeWidth - PaddingHorizontal * 3, rect.height), "IBindingSource");
+            float correction = 15;
+            Rect componentRect = Rect.MinMaxRect(rect.xMin,rect.yMin,rect.xMin + InvertBoxWidth + correction,rect.yMax);
+            EditorGUI.LabelField(componentRect, "Inv.");
+            componentRect = Rect.MinMaxRect(componentRect.xMax,rect.yMin,componentRect.xMax + TypeWidth,rect.yMax);
+            EditorGUI.LabelField(componentRect, "Type");
+            componentRect = Rect.MinMaxRect(componentRect.xMax,rect.yMin,rect.xMax,rect.yMax);
+            EditorGUI.LabelField(componentRect, "IBindingSource");
         };
     }
     #region binding source element drawing methods
@@ -116,25 +130,39 @@ public class DriverEditor<T,U> : Editor {
         {
             var element = BindingSourceList.serializedProperty.GetArrayElementAtIndex(index);
 
-            EditorGUI.PropertyField(new Rect(rect.x + PaddingHorizontal, rect.y, TypeWidth, rect.y), element.FindPropertyRelative("ReferenceType"), new GUIContent(""));
+            Rect componentRect = Rect.MinMaxRect(rect.xMin,rect.yMin,rect.xMin + InvertBoxWidth, rect.yMin + EditorGUIUtility.singleLineHeight);
+            EditorGUI.PropertyField(componentRect, element.FindPropertyRelative("IsInverted"),GUIContent.none);
+            
+            componentRect = Rect.MinMaxRect(componentRect.xMax,componentRect.yMin,componentRect.xMax + TypeWidth,componentRect.yMax);
+            EditorGUI.BeginChangeCheck();
+            EditorGUI.PropertyField(componentRect, element.FindPropertyRelative("ReferenceType"),GUIContent.none);
+            if(EditorGUI.EndChangeCheck()){
+                element.FindPropertyRelative("ObjectReference").objectReferenceValue = null;
+            }
 
             bool isMonoBehavior = element.FindPropertyRelative("ReferenceType").enumValueIndex == (int)BindingSourceType.MonoBehaviour;
             System.Type searchType = isMonoBehavior ? TypeMonobehavior : TypeScriptableObject;
             SerializedProperty referencedObject = element.FindPropertyRelative("ObjectReference");
-            if (!isMonoBehavior)
-                EditorGUI.ObjectField(new Rect(rect.x + PaddingHorizontal * 2 + TypeWidth, rect.y, rect.width - TypeWidth - PaddingHorizontal * 2,EditorGUIUtility.singleLineHeight), referencedObject, searchType, new GUIContent(""));
+            if (!isMonoBehavior){
+                componentRect = Rect.MinMaxRect(componentRect.xMax,componentRect.yMin,rect.xMax,componentRect.yMax);                
+                EditorGUI.ObjectField(componentRect, referencedObject, searchType,GUIContent.none);
+            }
             else
             {
-                float correctedObjectFieldWidth = (ObjectFieldWidth + PaddingHorizontal * 2 + TypeWidth) > rect.width ? rect.width - TypeWidth - PaddingHorizontal * 2 : ObjectFieldWidth;
-                EditorGUI.ObjectField(new Rect(rect.x + PaddingHorizontal * 2 + TypeWidth, rect.y, correctedObjectFieldWidth, EditorGUIUtility.singleLineHeight), referencedObject, searchType, new GUIContent(""));
-                float buttonWidth = rect.width - PaddingHorizontal * 3 - ObjectFieldWidth - TypeWidth;
-                if (buttonWidth > 10 && correctedObjectFieldWidth == ObjectFieldWidth)
+                componentRect = Rect.MinMaxRect(componentRect.xMax,componentRect.yMin,componentRect.xMax + ObjectFieldWidth,componentRect.yMax); 
+                bool SpaceLimited = rect.xMax - componentRect.xMax < 10;  
+                if(SpaceLimited)
+                    componentRect.xMax = rect.xMax;              
+                EditorGUI.ObjectField(componentRect, referencedObject, searchType, new GUIContent(""));
+                if (!SpaceLimited)
                 {
                     Component referencedComponent = referencedObject.objectReferenceValue as Component;
                     string componentName = referencedComponent == null ? "None" : referencedComponent.ToString();
                     using (new EditorGUI.DisabledGroupScope(referencedComponent == null))
                     {
-                        if (GUI.Button(new Rect(rect.x + PaddingHorizontal * 3 + ObjectFieldWidth + TypeWidth, rect.y, buttonWidth, rect.height - PaddingVertical), componentName))
+                        componentRect = Rect.MinMaxRect(componentRect.xMax,componentRect.yMin,rect.xMax,componentRect.yMax);
+
+                        if (GUI.Button(componentRect, componentName))
                         {
                             BindingSourceList.index = index;
                             var menu = EditorHelper.CreateAvailableComponentsDropdown(referencedObject,typeof(IBindingSource));

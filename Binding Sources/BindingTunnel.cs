@@ -210,15 +210,9 @@ public class BindingTunnel : BindingSourceMonobehaviour
         this.PropertyName = propertyName;
         this.SourceType = VariableUtilities.ClassifyType(source.GetType().GetProperty(propertyName).GetValue(source));
 
-        if (this.UpdateMode == BindingUpdateMode.PropertyChangedEvent)
-
-            if (SetupPropertyDelegates())
-            {
-                if (source as INotifyPropertyChanged != null)
-                    UpdateMode = BindingUpdateMode.PropertyChangedEvent; //only set to this if it is possible to subscribe
-
-            }
-
+        if (SetupPropertyDelegates() && this.UpdateMode == BindingUpdateMode.PropertyChangedEvent)
+            if (source as INotifyPropertyChanged != null)
+                UpdateMode = BindingUpdateMode.PropertyChangedEvent; //only set to this if it is possible to subscribe
     }
 
     public void PerformSourceCheck()
