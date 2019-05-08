@@ -18,7 +18,7 @@ public class BindingTunnelEditor : Editor
     private void OnEnable()
     {
         serializedObject.Update();
-        PropNameP = this.serializedObject.FindProperty("PropertyName");
+        PropNameP = this.serializedObject.FindProperty("propertyName");
         SourceP = this.serializedObject.FindProperty("source");
         PropTypeP = this.serializedObject.FindProperty("sourceType");
         BindingUpdateModeP = this.serializedObject.FindProperty("updateMode");
@@ -34,7 +34,7 @@ public class BindingTunnelEditor : Editor
     {
         serializedObject.Update();
 
-        SerializedProperty PropNameP = this.serializedObject.FindProperty("PropertyName");
+        SerializedProperty PropNameP = this.serializedObject.FindProperty("propertyName");
         SerializedProperty SourceP = this.serializedObject.FindProperty("source");
         SerializedProperty PropTypeP = this.serializedObject.FindProperty("sourceType");
         SerializedProperty BindingUpdateModeP = this.serializedObject.FindProperty("updateMode");
@@ -65,7 +65,7 @@ public class BindingTunnelEditor : Editor
                 InitializePropertyNames(unconvertedSource);
 
             }
-            SerializedProperty PropertyNameP = this.serializedObject.FindProperty("PropertyName");
+            SerializedProperty PropertyNameP = this.serializedObject.FindProperty("propertyName");
             EditorGUI.BeginChangeCheck();
             selectedPropertyIndex = EditorGUILayout.Popup("Property", selectedPropertyIndex, AvailablePropertyNames);
             if (EditorGUI.EndChangeCheck() || sourceChanged)
@@ -97,7 +97,7 @@ public class BindingTunnelEditor : Editor
     {
         AvailablePropertyNames = convertedSource.GetType().GetProperties().Select(p => p.Name).ToArray();
         selectedPropertyIndex = 0;
-        SerializedProperty PropNameP = this.serializedObject.FindProperty("PropertyName");
+        SerializedProperty PropNameP = this.serializedObject.FindProperty("propertyName");
         string name = PropNameP?.stringValue;
         int index = System.Array.FindIndex(AvailablePropertyNames, s => s.Equals(name));
         if (index != -1) selectedPropertyIndex = index;

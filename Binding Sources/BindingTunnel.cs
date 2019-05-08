@@ -22,7 +22,16 @@ public class BindingTunnel : BindingSourceMonobehaviour
         }
     }
 
-    public string PropertyName;
+
+    [SerializeField]
+    [HideInInspector]
+    private string propertyName;
+    public string PropertyName{
+        get{
+            return propertyName;
+        }
+    }
+    
     private System.Object cachedValue = null;
 
     [SerializeField]
@@ -207,7 +216,7 @@ public class BindingTunnel : BindingSourceMonobehaviour
     {
         this.UpdateMode = BindingUpdateMode.Manual; // setting to manual unsubscribes from any events
         this.source = source;
-        this.PropertyName = propertyName;
+        this.propertyName = propertyName;
         this.SourceType = VariableUtilities.ClassifyType(source.GetType().GetProperty(propertyName).GetValue(source));
 
         if (SetupPropertyDelegates() && this.UpdateMode == BindingUpdateMode.PropertyChangedEvent)
@@ -227,7 +236,7 @@ public class BindingTunnel : BindingSourceMonobehaviour
     }
     public void CheckSourceChanged(object o, PropertyChangedEventArgs e)
     {
-        if (this.PropertyName == e.PropertyName)
+        if (this.propertyName == e.PropertyName)
         {
             PerformSourceCheck();
         }
@@ -237,8 +246,8 @@ public class BindingTunnel : BindingSourceMonobehaviour
 
     public override string ToString()
     {
-        if (Source != null && this.PropertyName != null)
-            return this.Source.name + ": " + this.PropertyName;
+        if (Source != null && this.propertyName != null)
+            return this.Source.name + ": " + this.propertyName;
         else
             return this.GetType().Name;
 
@@ -418,17 +427,17 @@ public class BindingTunnel : BindingSourceMonobehaviour
 
     private bool SetupPropertyDelegates()
     {
-        if (Source == null || PropertyName == null)
+        if (Source == null || propertyName == null)
             return false;
         try
         {
-            System.Reflection.PropertyInfo info = Source.GetType().GetProperty(PropertyName);
+            System.Reflection.PropertyInfo info = Source.GetType().GetProperty(propertyName);
             CreateDelegates(info);
 
         }
         catch (System.Exception e)
         {
-            Debug.Log("Failed to set up binding tunnel for " + (PropertyName ?? "null"), Source);
+            Debug.Log("Failed to set up binding tunnel for " + (propertyName ?? "null"), Source);
             Debug.Log(e.Message);
             return false;
         }
