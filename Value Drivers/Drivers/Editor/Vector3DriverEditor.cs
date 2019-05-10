@@ -24,7 +24,7 @@ public class Vector3DriverEditor: DriverEditor<Vector3,Vector3> {
         if(EditorGUI.EndChangeCheck()){
             serializedObject.ApplyModifiedProperties();
             if(EditorApplication.isPlaying || EditorApplication.isPaused){
-                 Debug.Log("Flag flipped");
+                
                 ((Vector3Driver)target).SetUpdateFlag(true); 
             }
             else if(((Vector3Driver)target).SourceCount > 0){

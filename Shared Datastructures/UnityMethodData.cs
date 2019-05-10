@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [System.Serializable]
-public class MethodInfoSerializable{
+public class UnityMethodData{
     public Component ObjectReference;
     public string MethodName;
 }

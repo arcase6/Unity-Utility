@@ -20,7 +20,7 @@ public class Vector2Driver : Driver<Vector2,Vector2>
     }
 
 
-    public override Vector2 GetTargetValueStandard()
+    public override Vector2 GenerateDriveValue()
     {
         if(SourceCount == 1)
             return BindingSources.First().getValueVector2() + offset;

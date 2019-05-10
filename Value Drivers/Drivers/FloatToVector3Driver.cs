@@ -12,17 +12,17 @@ public class FloatToVector3Driver : DriverContextSensitive<float, Vector3>
         Offset = Vector3.zero;
         WriteToggles = Vector3Bool.FalseVector;
         DriveTarget = null;
-        DriverEvaluator = null;
+        PostProcessor = null;
         this.ResetSourceList();
     }
 
     
 
-    protected override Vector3 GetTargetValueStandard(Vector3 currentTargetValue)
+    protected override Vector3 GenerateDriveValue(Vector3 currentTargetValue)
     {
         float sourcesAverage = 0f;
         if(SourceCount >= 1){
-            foreach(BindingSourceData source in this.BindingSourcesFull){
+            foreach(BindingSourceData source in this.BindingSourcesSerializable){
                 float value = source.RuntimeBindingSource.getValueFloat();
                 if(source.IsInverted) value *= -1;
                 sourcesAverage += value;

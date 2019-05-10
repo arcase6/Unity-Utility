@@ -19,7 +19,7 @@ public class DecimalDriver : Driver<decimal,decimal>
         }
     }
 
-    public override decimal GetTargetValueStandard()
+    public override decimal GenerateDriveValue()
     {
         if(SourceCount == 1)
             return BindingSources.First().getValueDecimal();

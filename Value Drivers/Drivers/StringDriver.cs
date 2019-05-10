@@ -7,7 +7,7 @@ public class StringDriver : Driver<string,string>
 {
     
 
-    public override string GetTargetValueStandard()
+    public override string GenerateDriveValue()
     {
         if(this.SourceCount == 1)
             return BindingSources.First().getValueString();

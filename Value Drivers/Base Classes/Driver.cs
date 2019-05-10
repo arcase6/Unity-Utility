@@ -13,25 +13,26 @@ public abstract class Driver<T,U> : MonoBehaviour, IListener, ISerializationCall
 
     public bool AverageSourceValues;
 
-    public List<BindingSourceData> BindingSourcesFull = new List<BindingSourceData>();
+    public List<BindingSourceData> BindingSourcesSerializable = new List<BindingSourceData>();
     
     public IEnumerable<IBindingSource> BindingSources{
         get{
-            return BindingSourcesFull.Select(b => b.RuntimeBindingSource);
+            return BindingSourcesSerializable.Select(b => b.RuntimeBindingSource);
         }
     }
 
     public int SourceCount{
-        get{return BindingSourcesFull.Count;}
+        get{return BindingSourcesSerializable.Count;}
     }
 
 
 
     [HideInInspector]
     [SerializeField]
-    private ScriptableObject DriverEvaluatorSerializable;
+    private UnityEngine.Object PostProcessorSerializable;
+    public PostProcessor<U> PostProcessor;
 
-    public DriverEvaluator<T,U> DriverEvaluator;
+
     private System.Action<U> SetTargetProp;
     
 
@@ -81,24 +82,13 @@ public abstract class Driver<T,U> : MonoBehaviour, IListener, ISerializationCall
     }
 
 
-    public abstract U GetTargetValueStandard();
+    public abstract U GenerateDriveValue();
 
 
-
-    public System.Type GetAllowedType()
-    {
-        return typeof(T);
-    }
 
     public void SetUpdateFlag(bool value)
     {
         this.UpdateFlag = value;
-    }
-
-    public List<object> GetSourceValuesAsObjects()
-    {
-        
-        return this.BindingSources.Select(b => b.getValueAsObject()).ToList();
     }
 
     public void Notify()
@@ -116,6 +106,8 @@ public abstract class Driver<T,U> : MonoBehaviour, IListener, ISerializationCall
             {
                 UpdateFlag = false;
                 U value = GenerateDriveValue();
+                if(this.PostProcessor != null)
+                     value = PostProcessor.Proccess(value);
                 this.SetTargetProp(value);
             }
         }
@@ -125,15 +117,9 @@ public abstract class Driver<T,U> : MonoBehaviour, IListener, ISerializationCall
         }
     }
 
-    protected virtual U GenerateDriveValue()
-    {
-        if(this.DriverEvaluator == null)
-            return GetTargetValueStandard();
-        else{
-            throw new System.NotImplementedException(); //need to rewrite evaluators (they should now only have a single method)
-        }
-    }
 
+    //made virtual so that a driver with context can
+    //create a getter delegate needed for context
     public virtual bool SetupPropertyDelegates()
     {
         if (this.DriveTarget == null || this.TargetProperty == null)
@@ -158,19 +144,25 @@ public abstract class Driver<T,U> : MonoBehaviour, IListener, ISerializationCall
         return true;
     }
 
+    //a helper method that is used in defining a Reset
+    //method in a base class
     public void ResetSourceList(){
-        this.BindingSourcesFull.Clear();
+        this.BindingSourcesSerializable.Clear();
     }
 
     public void OnBeforeSerialize()
     {
         
+        this.PostProcessorSerializable = this.PostProcessor as UnityEngine.Object;
     }
 
     public void OnAfterDeserialize()
     {
-        foreach(BindingSourceData bindingSource in BindingSourcesFull){
+        foreach(BindingSourceData bindingSource in BindingSourcesSerializable){
             bindingSource.RuntimeBindingSource = bindingSource.ObjectReference as IBindingSource;
         }
+
+        this.PostProcessor = this.PostProcessorSerializable as PostProcessor<U>;
+
     }
 }

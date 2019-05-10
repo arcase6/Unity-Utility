@@ -21,11 +21,11 @@ public abstract class DriverContextSensitive<T, U> : Driver<T, U>
         return true;
     }
 
-    public sealed override U GetTargetValueStandard(){
-        return GetTargetValueStandard(GetTargetProp());
+    public sealed override U GenerateDriveValue(){
+        return GenerateDriveValue(GetTargetProp());
     }
 
-    protected abstract U GetTargetValueStandard(U currentTargetValue);
+    protected abstract U GenerateDriveValue(U currentTargetValue);
 
 
     

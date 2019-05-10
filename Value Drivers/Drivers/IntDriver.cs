@@ -19,7 +19,7 @@ public class IntegerDriver : Driver<int,int>
         }
     }
 
-    public override int GetTargetValueStandard()
+    public override int GenerateDriveValue()
     {
         if(SourceCount == 1)
             return BindingSources.First().getValueInteger();

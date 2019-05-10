@@ -19,7 +19,7 @@ public class FloatDriver : Driver<float,float>
         }
     }
 
-    public override float GetTargetValueStandard()
+    public override float GenerateDriveValue()
     {
         if(SourceCount == 1)
             return BindingSources.First().getValueFloat();

@@ -9,9 +9,10 @@ public class DriverEditor<T,U> : Editor {
     string[] PropertyNameOptions;
    
     private int SelectedIndex;
+    private SerializedProperty BindingSourcesP;
     private SerializedProperty TargetP;
     private SerializedProperty PropertyNameP;
-    private SerializedProperty EvaluatorP;
+    private SerializedProperty PostProcessorP;
     private SerializedProperty AggregateSourcesP;
     SerializedProperty ModeOfOperationP;
 
@@ -24,7 +25,7 @@ public class DriverEditor<T,U> : Editor {
     System.Type TypeScriptableObject = typeof(BindingSourceScriptableObject);
     private System.Type allowedTargetType = typeof(U);
     private System.Type allowedSourceType = typeof(T);
-    private string EvaluatorLabel;
+    private string PostProcessorLabel;
 
 #region Unity Magic Methods
 
@@ -33,11 +34,12 @@ public class DriverEditor<T,U> : Editor {
         if (target == null) return;
         string typeName = allowedTargetType.Name.Split('.').Last();
         string sourceName = allowedSourceType.Name.Split('.').Last();
-        EvaluatorLabel = "Evaluator<" + sourceName + ", " + typeName +">";
+        PostProcessorLabel = "PostProcessor<" + typeName +">";
+        BindingSourcesP = serializedObject.FindProperty("BindingSourcesSerializable");
         ModeOfOperationP = serializedObject.FindProperty("ModeOfOperation");
         PropertyNameP = serializedObject.FindProperty("TargetProperty");
         TargetP = serializedObject.FindProperty("DriveTarget");
-        EvaluatorP = serializedObject.FindProperty("DriverEvaluatorSerializable");
+        PostProcessorP = serializedObject.FindProperty("PostProcessorSerializable");
         AggregateSourcesP = serializedObject.FindProperty("AverageSourceValues");
 
         CreateReorderableList();
@@ -59,7 +61,7 @@ public class DriverEditor<T,U> : Editor {
 
         DrawTargetSelectionFields();
    
-        EditorGUILayout.ObjectField(EvaluatorP,typeof(DriverEvaluator<T,U>),new GUIContent(EvaluatorLabel));
+        EditorGUILayout.ObjectField(PostProcessorP,new GUIContent(PostProcessorLabel));
 
         if(BindingSourceList.count > 1){
             EditorGUILayout.PropertyField(AggregateSourcesP);
@@ -105,9 +107,11 @@ public class DriverEditor<T,U> : Editor {
     }
 
 #endregion
+    #region binding source element drawing methods
+
     private void CreateReorderableList()
     {
-        BindingSourceList = new ReorderableList(serializedObject, serializedObject.FindProperty("BindingSourcesFull"), true, true, true, true);
+        BindingSourceList = new ReorderableList(serializedObject, BindingSourcesP, true, true, true, true);
     }
 
     private void SetupReorderableListHeaderDrawer()
@@ -123,7 +127,6 @@ public class DriverEditor<T,U> : Editor {
             EditorGUI.LabelField(componentRect, "IBindingSource");
         };
     }
-    #region binding source element drawing methods
     private void SetupReorderableListElementDrawer()
     {
         BindingSourceList.drawElementCallback = (Rect rect, int index, bool isActive, bool isFocused) =>
@@ -174,6 +177,7 @@ public class DriverEditor<T,U> : Editor {
         };
 
     }
+   
     #endregion
 
     

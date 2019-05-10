@@ -7,7 +7,7 @@ using UnityEngine;
 public class FixedUpdateSubscriber : MonoBehaviour
 {
 
-    public List<MethodInfoSerializable> Methods;
+    public List<UnityMethodData> Methods;
     private System.Action[] Actions;
 
 

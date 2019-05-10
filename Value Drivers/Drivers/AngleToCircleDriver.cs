@@ -58,11 +58,11 @@ public class AngleToCircleDriver : DriverContextSensitive<float, Vector3>
 
         
 
-    protected override Vector3 GetTargetValueStandard(Vector3 currentTargetValue)
+    protected override Vector3 GenerateDriveValue(Vector3 currentTargetValue)
     {
         //get the aggregated float 
         float totalAngle = 0f;
-        foreach(BindingSourceData bd in BindingSourcesFull){
+        foreach(BindingSourceData bd in BindingSourcesSerializable){
             if(bd.IsInverted)
                 totalAngle -= bd.RuntimeBindingSource.getValueFloat();
             else

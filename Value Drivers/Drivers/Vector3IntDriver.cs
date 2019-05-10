@@ -20,7 +20,7 @@ public class Vector3IntDriver : Driver<Vector3Int,Vector3Int>
     }
 
 
-    public override Vector3Int GetTargetValueStandard()
+    public override Vector3Int GenerateDriveValue()
     {
         if(SourceCount == 1)
             return BindingSources.First().getValueVector3Int() + offset;

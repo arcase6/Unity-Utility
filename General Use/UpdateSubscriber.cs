@@ -8,8 +8,8 @@ public class UpdateSubscriber : MonoBehaviour
     public bool UpdateUsingFixedPeriod;
     public float UpdatePeriod;
     private float Timer;
-    public List<MethodInfoSerializable> Methods;
-    private System.Action[] Actions;
+    public List<UnityMethodData> Methods;
+    private System.Action[] CachedActions;
 
     private void Reset() {
         UpdateUsingFixedPeriod = false;
@@ -39,7 +39,7 @@ public class UpdateSubscriber : MonoBehaviour
                 Debug.Log(e.Message);
             }
         }
-        Actions = actions.ToArray();
+        CachedActions = actions.ToArray();
 
     }
 
@@ -58,9 +58,13 @@ public class UpdateSubscriber : MonoBehaviour
 
     private void CallMethods()
     {
-        foreach (System.Action action in Actions)
+        foreach (System.Action action in CachedActions)
         {
+            try{
             action.Invoke();
+            }catch{
+                
+            }
         }
     }
 }

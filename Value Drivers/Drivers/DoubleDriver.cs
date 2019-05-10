@@ -19,7 +19,7 @@ public class DoubleDriver : Driver<double,double>
         }
     }
 
-    public override double GetTargetValueStandard()
+    public override double GenerateDriveValue()
     {
         if(SourceCount == 1)
             return BindingSources.First().getValueDouble();

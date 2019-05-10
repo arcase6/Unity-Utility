@@ -34,14 +34,11 @@ public class BindingTunnelEditor : Editor
     {
         serializedObject.Update();
 
-        SerializedProperty PropNameP = this.serializedObject.FindProperty("propertyName");
-        SerializedProperty SourceP = this.serializedObject.FindProperty("source");
-        SerializedProperty PropTypeP = this.serializedObject.FindProperty("sourceType");
-        SerializedProperty BindingUpdateModeP = this.serializedObject.FindProperty("updateMode");
-
         EditorGUI.BeginChangeCheck();
         EditorGUILayout.ObjectField(SourceP);
         UnityEngine.Component selectedSource = SourceP.objectReferenceValue as UnityEngine.Component;
+        if(selectedSource == null)
+            return;
         if(GUILayout.Button(selectedSource.ToString())){
             GenericMenu dropdownMenu = EditorHelper.CreateAvailableComponentsDropdown(SourceP,typeof(UnityEngine.Component));
             dropdownMenu.ShowAsContext();
@@ -97,7 +94,6 @@ public class BindingTunnelEditor : Editor
     {
         AvailablePropertyNames = convertedSource.GetType().GetProperties().Select(p => p.Name).ToArray();
         selectedPropertyIndex = 0;
-        SerializedProperty PropNameP = this.serializedObject.FindProperty("propertyName");
         string name = PropNameP?.stringValue;
         int index = System.Array.FindIndex(AvailablePropertyNames, s => s.Equals(name));
         if (index != -1) selectedPropertyIndex = index;

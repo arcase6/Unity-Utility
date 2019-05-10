@@ -20,7 +20,7 @@ public class Vector2IntDriver : Driver<Vector2Int,Vector2Int>
     }
 
 
-    public override Vector2Int GetTargetValueStandard()
+    public override Vector2Int GenerateDriveValue()
     {
         if(SourceCount == 1)
             return BindingSources.First().getValueVector2Int() + offset;

@@ -19,7 +19,7 @@ public class BooleanDriver : Driver<bool,bool>
         }
     }
 
-    public override bool GetTargetValueStandard()
+    public override bool GenerateDriveValue()
     {
         if(SourceCount > 1){
             return BindingSources.First().getValueBoolean() ^ InvertValue;
