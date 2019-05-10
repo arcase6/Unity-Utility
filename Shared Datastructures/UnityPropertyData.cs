@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [System.Serializable]
-public class UnityMethodData : System.IEquatable<UnityMethodData>
+public class UnityPropertyData : System.IEquatable<UnityPropertyData>
 {
     #region Fields
     
@@ -12,8 +12,8 @@ public class UnityMethodData : System.IEquatable<UnityMethodData>
     
     [SerializeField]
     [HideInInspector]
-    private string methodName;
-    public string MethodName { get => methodName; set => methodName = value; }
+    private string propertyName;
+    public string PropertyName { get => propertyName; set => propertyName = value; }
 
 
 
@@ -29,14 +29,14 @@ public class UnityMethodData : System.IEquatable<UnityMethodData>
 
     //do not use this method, it exists only to work with unity's serialization system
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public UnityMethodData(){
+    public UnityPropertyData(){
         this.targetComponent = null;
-        this.methodName = null;
+        this.propertyName = null;
     }
 
-    public UnityMethodData(Component targetComponent, string methodName){
+    public UnityPropertyData(Component targetComponent, string methodName){
         this.targetComponent = targetComponent;
-        this.methodName = methodName;
+        this.propertyName = methodName;
     }    
     #endregion
 
@@ -44,20 +44,20 @@ public class UnityMethodData : System.IEquatable<UnityMethodData>
     public override int GetHashCode()
     {
         if(hashDirtyBit){
-            if(this.methodName == null || targetComponent == null)
+            if(this.propertyName == null || targetComponent == null)
                 return -1;
-            hashValue = TargetComponent.GetHashCode() * 7 + MethodName.GetHashCode() * 5;
+            hashValue = TargetComponent.GetHashCode() * 7 + PropertyName.GetHashCode() * 5;
             hashDirtyBit = false;
         }
        return hashValue;
     }
 
     public override bool Equals(object obj){
-        UnityMethodData other = obj as UnityMethodData;
+        UnityPropertyData other = obj as UnityPropertyData;
         return this.Equals(other);
     }
 
-    public bool Equals(UnityMethodData other)
+    public bool Equals(UnityPropertyData other)
     {
         if(null == other){
             return false;

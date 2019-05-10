@@ -8,7 +8,7 @@ using System.Linq;
 public class UpdateSubscriberEditor : Editor
 {
 
-    ReorderableList MethodList;
+    ReorderableList MethodListReorderable;
 
 
     [ExecuteInEditMode]
@@ -21,14 +21,16 @@ public class UpdateSubscriberEditor : Editor
         SetupReorderableListElementDrawer();
     }
 
+
     private void CreateReorderableList()
     {
-        MethodList = new ReorderableList(serializedObject, serializedObject.FindProperty("Methods"), true, true, true, true);
+        MethodListReorderable = new ReorderableList(serializedObject, serializedObject.FindProperty("MethodDefinitions"), true, true, true, true);
+
     }
 
     private void SetupReorderableListHeaderDrawer()
     {
-        MethodList.drawHeaderCallback = (Rect rect) =>
+        MethodListReorderable.drawHeaderCallback = (Rect rect) =>
         {
             EditorGUI.LabelField(new Rect(rect.x, rect.y, rect.width - 200, rect.height), "Component");
             EditorGUI.LabelField(new Rect(rect.x + rect.width - 200, rect.y, 200, rect.height), "Action");
@@ -37,13 +39,14 @@ public class UpdateSubscriberEditor : Editor
 
     private void SetupReorderableListElementDrawer()
     {
-        MethodList.drawElementCallback = (Rect rect, int index, bool isActive, bool isFocused) =>
+        MethodListReorderable.drawElementCallback = (Rect rect, int index, bool isActive, bool isFocused) =>
         {
-            var element = MethodList.serializedProperty.GetArrayElementAtIndex(index);
+            EditorGUI.BeginChangeCheck();
+            var element = MethodListReorderable.serializedProperty.GetArrayElementAtIndex(index);
             rect.y += 2;
             float nameWidth = 200;
             float objectWidth = rect.width - nameWidth;
-            SerializedProperty componentRef = element.FindPropertyRelative("ObjectReference");
+            SerializedProperty componentRef = element.FindPropertyRelative("targetComponent");
             EditorGUI.PropertyField(
                 new Rect(rect.x, rect.y, objectWidth - 5, EditorGUIUtility.singleLineHeight),
                 componentRef, GUIContent.none);
@@ -57,7 +60,7 @@ public class UpdateSubscriberEditor : Editor
             }
             else { options = new string[0]; }
 
-            SerializedProperty methodNameP = element.FindPropertyRelative("MethodName");
+            SerializedProperty methodNameP = element.FindPropertyRelative("methodName");
             int methodIndex = methodNameP.stringValue != null ? Array.IndexOf(options, methodNameP.stringValue) : 0;
             bool invalidIndex = methodIndex == -1;
             if (invalidIndex){
@@ -70,7 +73,13 @@ public class UpdateSubscriberEditor : Editor
                 if(methodIndex != newIndex || invalidIndex || methodNameP.stringValue == null)
                     methodNameP.stringValue = options[newIndex];
             }
-            //EditorGUI.PropertyField(new Rect(rect.x + objectWidth, rect.y, nameWidth, EditorGUIUtility.singleLineHeight),methodNameP, GUIContent.none);
+
+            if(EditorGUI.EndChangeCheck()){
+                SerializedProperty hashDirtyBitP = element.FindPropertyRelative("hashDirtyBit");
+                if(hashDirtyBitP != null){
+                    hashDirtyBitP.boolValue = true;
+                }
+            }
         };
 
     }
@@ -85,7 +94,7 @@ public class UpdateSubscriberEditor : Editor
         EditorGUILayout.PropertyField(updateEveryFrame);
         if(updateEveryFrame.boolValue)
             EditorGUILayout.PropertyField(serializedObject.FindProperty("UpdatePeriod"),new GUIContent("Update Period (seconds)"));
-        MethodList.DoLayoutList();
+        MethodListReorderable.DoLayoutList();
         serializedObject.ApplyModifiedProperties();
 
     }

@@ -8,48 +8,87 @@ public class UpdateSubscriber : MonoBehaviour
     public bool UpdateUsingFixedPeriod;
     public float UpdatePeriod;
     private float Timer;
-    public List<UnityMethodData> Methods;
-    private System.Action[] CachedActions;
+    [SerializeField]
+    private List<UnityMethodData> MethodDefinitions = new List<UnityMethodData>();
+    private Dictionary<UnityMethodData, System.Action> CachedActions = new Dictionary<UnityMethodData, System.Action>();
 
-    private void Reset() {
+    public bool AddMethod(Component targetComponent, string propertyName)
+    {
+        UnityMethodData newItem = new UnityMethodData(targetComponent, propertyName);
+        CacheMethodDelegate(newItem);
+        if(MethodDefinitions.Any(md => md == newItem))
+            return false;
+        MethodDefinitions.Add(newItem);
+        return true;
+    }
+    public bool RemoveMethod(Component targetComponent, string propertyName)
+    {
+        return this.RemoveMethod(new UnityMethodData(targetComponent, propertyName));
+    }
+
+    public bool RemoveMethod(UnityMethodData methodSpecification)
+    {
+        if (this.CachedActions.ContainsKey(methodSpecification))
+            CachedActions.Remove(methodSpecification);
+        bool wasItemPresent = MethodDefinitions.Any(md => md == methodSpecification);
+        MethodDefinitions.RemoveAll(md => md == methodSpecification);
+        return wasItemPresent;
+    }
+
+
+    private void Reset()
+    {
         UpdateUsingFixedPeriod = false;
         UpdatePeriod = .1f;
-        Methods = null;
+        MethodDefinitions = new List<UnityMethodData>();
+        CachedActions = new Dictionary<UnityMethodData, System.Action>();
     }
 
-    private void OnEnable() {
-        Timer = 0;
+    private void OnEnable()
+    {
+        Timer = 0f;
     }
 
-    void Start(){
-
-        List<System.Action> actions = new List<System.Action>(Methods.Count);
-
-        for(int i = 0; i < Methods.Count;i++){
-            try{
-            Object referenceObject = Methods[i].ObjectReference;
-            string MethodName = Methods[i]. MethodName;
-            System.Type objectType = referenceObject.GetType();
-            System.Reflection.MethodInfo methodInfo = objectType.GetMethod(MethodName,new System.Type[0]);
-            System.Action action = System.Delegate.CreateDelegate(typeof(System.Action),referenceObject,methodInfo) as System.Action;
-            if(action != null) actions.Add(action);
-            }catch(System.Exception e){
-                string MethodName = Methods[i].MethodName ?? "Null MethodName";
-                Debug.Log("Failed to find: " + MethodName);
-                Debug.Log(e.Message);
-            }
+    void Start()
+    {
+        foreach (UnityMethodData methodData in MethodDefinitions)
+        {
+            if (!this.CachedActions.ContainsKey(methodData))
+                CacheMethodDelegate(methodData);
         }
-        CachedActions = actions.ToArray();
 
+    }
+
+    private bool CacheMethodDelegate(UnityMethodData methodData)
+    {
+        try
+        {
+            System.Type objectType = methodData.TargetComponent.GetType();
+            System.Reflection.MethodInfo methodInfo = objectType.GetMethod(methodData.MethodName, new System.Type[0]);
+            System.Action action = System.Delegate.CreateDelegate(typeof(System.Action), methodData.TargetComponent, methodInfo) as System.Action;
+            if (action != null)
+                CachedActions.Add(methodData, action);
+            else
+                return false;
+        }
+        catch
+        {
+            string MethodName = methodData.MethodName ?? "Null MethodName";
+            Debug.Log("Failed to create delegate for " + MethodName + " in Component : " + methodData.TargetComponent.ToString());
+            return false;
+        }
+        return true;
     }
 
     void Update()
     {
         if (!UpdateUsingFixedPeriod || UpdatePeriod == 0)
             CallMethods();
-        else{
-            Timer +=Time.deltaTime;
-            if(Timer >= UpdatePeriod){
+        else
+        {
+            Timer += Time.deltaTime;
+            if (Timer >= UpdatePeriod)
+            {
                 CallMethods();
                 Timer = Timer % UpdatePeriod;
             }
@@ -58,13 +97,36 @@ public class UpdateSubscriber : MonoBehaviour
 
     private void CallMethods()
     {
-        foreach (System.Action action in CachedActions)
+        for (int index = MethodDefinitions.Count - 1; index >= 0; index--)
         {
-            try{
-            action.Invoke();
-            }catch{
-                
+            UnityMethodData methodData = MethodDefinitions[index];
+            try
+            {
+                System.Action action = CachedActions[methodData];
+                action();
+            }
+            catch
+            {
+                try
+                {
+                    if (this.CacheMethodDelegate(methodData))
+                    {
+                        System.Action action = CachedActions[methodData];
+                        action();
+                        continue;
+                    }
+                }
+                catch { }
+                RemoveBrokenMethodData(index);
             }
         }
+    }
+
+    private void RemoveBrokenMethodData(int index)
+    {
+        UnityMethodData methodData = MethodDefinitions[index];
+        if (CachedActions.ContainsKey(methodData))
+            CachedActions.Remove(methodData);
+        MethodDefinitions.RemoveAt(index);
     }
 }
