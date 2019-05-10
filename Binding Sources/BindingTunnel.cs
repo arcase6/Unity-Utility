@@ -257,7 +257,7 @@ public class BindingTunnel : BindingSourceMonobehaviour
     #endregion
     #region Unity Magic Methods
 
-    private void OnEnable()
+    protected virtual void OnEnable()
     {
         if (updateMode == BindingUpdateMode.PropertyChangedEvent)
             SubscribeToPropertyChanged();

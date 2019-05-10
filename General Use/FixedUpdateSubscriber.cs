@@ -86,7 +86,7 @@ public class FixedUpdateSubscriber : MonoBehaviour
             CallMethods();
         else
         {
-            Timer += Time.deltaTime;
+            Timer += Time.fixedDeltaTime;
             if (Timer >= UpdatePeriod)
             {
                 CallMethods();
