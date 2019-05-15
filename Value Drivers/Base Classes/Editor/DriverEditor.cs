@@ -167,8 +167,11 @@ public class DriverEditor<T,U> : Editor {
 
                         if (GUI.Button(componentRect, componentName))
                         {
+                            System.Action<object> callback = o =>{
+                                //not sure if anything needs to be done here: need to test to see if component change menu works                                
+                            };
                             BindingSourceList.index = index;
-                            var menu = EditorHelper.CreateAvailableComponentsDropdown(referencedObject,typeof(IBindingSource));
+                            var menu = EditorHelper.CreateAvailableComponentsDropdown(referencedObject,typeof(IBindingSource), callback);
                             menu?.ShowAsContext();
                         }
                     }
@@ -210,7 +213,9 @@ public class DriverEditor<T,U> : Editor {
             return;
         }
         System.Reflection.PropertyInfo[] properties = component.GetType().GetProperties();
-        this.PropertyNameOptions = properties.Where(p => p.PropertyType == allowedTargetType).Select(p => p.Name).ToArray();
+        this.PropertyNameOptions = properties.Where(p => p.PropertyType == allowedTargetType)
+        .Where(t => t.GetSetMethod() != null)        
+        .Select(p => p.Name).ToArray();
         
         if(this.PropertyNameOptions.Length == 0)
             PropertyNameOptions = new string[]{"None"};

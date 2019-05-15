@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class UpdateSubscriber : MonoBehaviour
+public class UpdateSubscriber : MonoBehaviour, ISerializationCallbackReceiver
 {
     public bool UpdateUsingFixedPeriod;
     public float UpdatePeriod;
@@ -49,15 +49,7 @@ public class UpdateSubscriber : MonoBehaviour
         Timer = 0f;
     }
 
-    void Start()
-    {
-        foreach (UnityMethodData methodData in MethodDefinitions)
-        {
-            if (!this.CachedActions.ContainsKey(methodData))
-                CacheMethodDelegate(methodData);
-        }
-
-    }
+   
 
     private bool CacheMethodDelegate(UnityMethodData methodData)
     {
@@ -74,9 +66,9 @@ public class UpdateSubscriber : MonoBehaviour
         catch
         {
             string MethodName = methodData.MethodName ?? "Null MethodName";
-            Debug.Log("Failed to create delegate for " + MethodName + " in Component : " + methodData.TargetComponent.ToString());
+            Debug.Log("Failed to create delegate for " + MethodName + " in Component : " + methodData.TargetComponent.name);
             return false;
-        }
+        } 
         return true;
     }
 
@@ -128,5 +120,19 @@ public class UpdateSubscriber : MonoBehaviour
         if (CachedActions.ContainsKey(methodData))
             CachedActions.Remove(methodData);
         MethodDefinitions.RemoveAt(index);
+    }
+
+    public void OnBeforeSerialize()
+    {
+
+    }
+
+    public void OnAfterDeserialize()
+    {
+        foreach (UnityMethodData methodData in MethodDefinitions)
+        {
+            if (!this.CachedActions.ContainsKey(methodData))
+                CacheMethodDelegate(methodData);
+        }
     }
 }

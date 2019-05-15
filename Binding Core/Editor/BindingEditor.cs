@@ -24,7 +24,6 @@ public class BindingEditor : Editor
         SourceRawObjectP = SourceRawP.FindPropertyRelative("ObjectReference");
         SourceRawTypeP = SourceRawP.FindPropertyRelative("ReferenceType");
         BindingModeP = serializedObject.FindProperty("BindingMode");
-        serializedObject.Update();
         CheckBindingModeConstraints();
     }
 
@@ -36,7 +35,6 @@ public class BindingEditor : Editor
         ShowSourceSelectionControls();
         if (EditorGUI.EndChangeCheck()){
             serializedObject.ApplyModifiedProperties();
-            serializedObject.Update();
             CheckBindingModeConstraints();
         }
         ShowBindingModeDropdown();
@@ -46,6 +44,7 @@ public class BindingEditor : Editor
 
     private void CheckBindingModeConstraints()
     {
+        serializedObject.Update();
         if (SourceRawObjectP.objectReferenceValue != null)
         {
             IBindingSource source = (SourceRawObjectP.objectReferenceValue as IBindingSource);
@@ -76,7 +75,10 @@ public class BindingEditor : Editor
             {
                 if (GUILayout.Button(componentName))
                 {
-                    var menu = EditorHelper.CreateAvailableComponentsDropdown(SourceRawObjectP, typeof(IBindingSource));
+                    System.Action<object> callback = o => {
+                        CheckBindingModeConstraints();
+                    };
+                    var menu = EditorHelper.CreateAvailableComponentsDropdown(SourceRawObjectP, typeof(IBindingSource), callback);
                     menu?.ShowAsContext();
                 }
             }

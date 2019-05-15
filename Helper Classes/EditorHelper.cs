@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class EditorHelper
 {
-    public static GenericMenu CreateAvailableComponentsDropdown(SerializedProperty selectedProperty,System.Type componentType)
+    public static GenericMenu CreateAvailableComponentsDropdown(SerializedProperty selectedProperty,System.Type componentType, System.Action<object> callback)
     {
         var menu = new GenericMenu();
         Component currentlySelectedComponent = selectedProperty.objectReferenceValue as Component;
@@ -14,7 +14,7 @@ public class EditorHelper
         Component[] components = currentlySelectedComponent.gameObject.GetComponents(componentType);
         foreach (Component component in components)
         {
-            menu.AddItem(new GUIContent(component.ToString()), false, ChangeSource, new SourceChangeInfo() { newSource = component, property = selectedProperty });
+            menu.AddItem(new GUIContent(component.ToString()), false, ChangeSource, new SourceChangeInfo() { newSource = component, property = selectedProperty, AfterMenuItemClicked = callback });
         }
         return menu;
     }
@@ -24,5 +24,6 @@ public class EditorHelper
         SourceChangeInfo changes = ((SourceChangeInfo)changeInfo);
         changes.property.objectReferenceValue = changes.newSource;
         changes.property.serializedObject.ApplyModifiedProperties();
+        changes.AfterMenuItemClicked(changeInfo);
     }
 }

@@ -39,6 +39,25 @@ public class MulticasterEditor<T> : Editor
         SetupReorderableListElementDrawer();
 
     }
+    
+    public override void OnInspectorGUI()
+    {
+        serializedObject.Update();
+
+        //DrawTargetSelectionFields();
+   
+        //EditorGUILayout.ObjectField(PostProcessorP,new GUIContent(PostProcessorLabel));
+
+        
+        EditorGUILayout.PropertyField(MulticastValueP);
+        BindingSourceList.DoLayoutList();
+
+        
+        
+
+        serializedObject.ApplyModifiedProperties();
+    }
+    
     #endregion
 
       private void CreateReorderableList()
@@ -88,7 +107,10 @@ public class MulticasterEditor<T> : Editor
                 if(targetComponentP.objectReferenceValue != null)
                     componentName = targetComponentP.objectReferenceValue.ToString();
                 if(GUI.Button(componentRect, componentName)){
-                    var menu = EditorHelper.CreateAvailableComponentsDropdown(targetComponentP,typeof(Component));
+                    System.Action<object> callback = o =>{
+                        //not sure if anything needs to be done here: need to test to see if component change menu works
+                    };
+                    var menu = EditorHelper.CreateAvailableComponentsDropdown(targetComponentP,typeof(Component), callback);
                     menu?.ShowAsContext();
                 }
             }
@@ -125,7 +147,9 @@ public class MulticasterEditor<T> : Editor
         if (refreshExistingCache || this.ComponentToPropertyLists.TryGetValue(targetComponent, out propertyList) == false){
             //get the list of available properties, cache it, return it
             System.Reflection.PropertyInfo[] properties = targetComponent.GetType().GetProperties();
-            propertyList = properties.Where(p => p.PropertyType == allowedTargetType).Select(p => p.Name).ToArray();
+            propertyList = properties.Where(p => p.PropertyType == allowedTargetType)
+            .Where(p => p.GetSetMethod() != null)
+            .Select(p => p.Name).ToArray();
             this.ComponentToPropertyLists[targetComponent] = propertyList;
         }
         if(propertyList == null || !propertyList.Any())
@@ -135,22 +159,6 @@ public class MulticasterEditor<T> : Editor
     }
 
 
-    public override void OnInspectorGUI()
-    {
-        serializedObject.Update();
-
-        //DrawTargetSelectionFields();
-   
-        //EditorGUILayout.ObjectField(PostProcessorP,new GUIContent(PostProcessorLabel));
-
-        
-        EditorGUILayout.PropertyField(MulticastValueP);
-        BindingSourceList.DoLayoutList();
-
-        
-        
-
-        serializedObject.ApplyModifiedProperties();
-    }
+    
    
 }
