@@ -1,10 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 
-[InitializeOnLoad]
-public abstract class BindingSourceScriptableObject : ScriptableObject, IBindingSource
+public abstract class BindingSourceScriptableObject : ScriptableObject, IBindingSource, ISerializationCallbackReceiver
 {
     private List<IListener> listeners = new List<IListener>();
 
@@ -59,12 +57,17 @@ public abstract class BindingSourceScriptableObject : ScriptableObject, IBinding
     }
 
 
-    
-    private void Awake(){
-        Init();
-    }
 
     public abstract void Init();
-    
+
+    public void OnBeforeSerialize()
+    {
+        
+    }
+
+    public void OnAfterDeserialize()
+    {
+        Init();
+    }
 }
 

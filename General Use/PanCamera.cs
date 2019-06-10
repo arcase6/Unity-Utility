@@ -6,6 +6,9 @@ public class PanCamera : MonoBehaviour
 {
     //public float panSpeed = 1250.0f;
     public Vector2 panSpeed = new Vector2(215f,125f);
+
+    public float panModifier = 1f;
+
     public BooleanVariable isDraggingObject;
     private Vector3 mouseOrigin;
 
@@ -15,6 +18,7 @@ public class PanCamera : MonoBehaviour
     void Start()
     {
         MainCamera = GetComponent<Camera>();
+        panSpeed = panSpeed * panModifier;
     }
 
     // Update is called once per frame

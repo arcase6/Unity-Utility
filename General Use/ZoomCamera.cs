@@ -9,12 +9,15 @@ public class ZoomCamera : MonoBehaviour
     
     public float maxSize = 30f;
     public float Sensitivity = 1000f;
+
+    public float ZoomModifier = 1f;
     private Camera MainCamera;
 
     // Start is called before the first frame update
     void Start()
     {
         MainCamera = GetComponent<Camera>();
+        Sensitivity = Sensitivity * ZoomModifier;
     }
 
     // Update is called once per frame
