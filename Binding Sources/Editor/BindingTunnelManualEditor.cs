@@ -87,10 +87,12 @@ public class BindingTunnelManualEditor : Editor
                         PropNameP.stringValue = AvailablePropertyNames.ElementAtOrDefault(selectedPropertyIndex);
                     }
                     System.Reflection.PropertyInfo propertyInfo = unconvertedSource.GetType().GetProperty(PropNameP.stringValue);
-                    System.Type rawType = propertyInfo.PropertyType;
-                    VariableType type = VariableUtilities.ClassifyType(rawType);
+                    if(propertyInfo != null){
+                        System.Type rawType = propertyInfo.PropertyType;
+                        VariableType type = VariableUtilities.ClassifyType(rawType);
 
-                    PropTypeP.enumValueIndex = (int)type;
+                        PropTypeP.enumValueIndex = (int)type;
+                    }
                 }
             }
 
@@ -105,9 +107,10 @@ public class BindingTunnelManualEditor : Editor
 
     private void InitializePropertyNames(object convertedSource)
     {
-        AvailablePropertyNames = convertedSource.GetType().GetProperties()
+        System.Reflection.PropertyInfo[] properties = convertedSource.GetType().GetProperties();
+        AvailablePropertyNames = properties
         .Where(t => VariableUtilities.ClassifyType(t.PropertyType) != VariableType.Unspecified)
-        .Where(t => t.GetGetMethod() == null)
+        .Where(t => t.GetGetMethod() != null)
         .Select(p => p.Name).ToArray();
         selectedPropertyIndex = 0;
         string name = PropNameP?.stringValue;
