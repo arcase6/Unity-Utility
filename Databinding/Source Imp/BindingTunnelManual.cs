@@ -36,7 +36,7 @@ public class BindingTunnelManual : BindingSourceMonobehaviour
 
     [SerializeField]
     [HideInInspector]
-    private BindingUpdateMode updateMode = BindingUpdateMode.Manual;
+    private BindingUpdateMode updateMode = BindingUpdateMode.PropertyChangedEvent;
 
     public BindingUpdateMode UpdateMode
     {

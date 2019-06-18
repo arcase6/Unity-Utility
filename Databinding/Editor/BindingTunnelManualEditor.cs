@@ -107,7 +107,7 @@ public class BindingTunnelManualEditor : Editor
     {
         AvailablePropertyNames = convertedSource.GetType().GetProperties()
         .Where(t => VariableUtilities.ClassifyType(t.PropertyType) != VariableType.Unspecified)
-        .Where(t => t.GetGetMethod() == null)
+        .Where(t => t.GetGetMethod() != null)
         .Select(p => p.Name).ToArray();
         selectedPropertyIndex = 0;
         string name = PropNameP?.stringValue;
