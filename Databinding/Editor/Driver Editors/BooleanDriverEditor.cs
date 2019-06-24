@@ -23,7 +23,8 @@ public class BooleanDriverEditor : DriverEditor<bool,bool> {
                 ((BooleanDriver)target).SetUpdateFlag(true); 
             }
         }
-
+        serializedObject.ApplyModifiedProperties();
+        
         base.OnInspectorGUI();
         
         

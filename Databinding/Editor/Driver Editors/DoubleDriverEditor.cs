@@ -24,6 +24,7 @@ public class DoubleDriverEditor : DriverEditor<double,double> {
             }
         }
 
+        serializedObject.ApplyModifiedProperties();
         base.OnInspectorGUI();
         
         

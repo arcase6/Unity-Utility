@@ -8,7 +8,7 @@ public abstract class BindingSourceMonobehaviour : MonoBehaviour, IBindingSource
 
     [SerializeField]
     [HideInInspector]
-    private VariableType sourceType = VariableType.Unspecified;
+    protected VariableType sourceType = VariableType.Unspecified;
     public VariableType SourceType { get => sourceType; set => sourceType = value; }
     public abstract BindingMode PrefferedMode { get; }
     public abstract bool LockBindingMode { get; }
@@ -33,24 +33,44 @@ public abstract class BindingSourceMonobehaviour : MonoBehaviour, IBindingSource
             this.listeners.Remove(listener);
     }
 
-    public abstract int getValueInteger();
+    public virtual int getValueInteger(){
+        throw new System.NotSupportedException();
+    }
 
-    public abstract float getValueFloat();
+    public virtual float getValueFloat(){
+        throw new System.NotSupportedException();
+    }
 
-    public abstract double getValueDouble();
+    public virtual double getValueDouble(){
+        throw new System.NotSupportedException();
+    }
 
     public abstract string getValueString();
 
     public abstract void setFromValueString(string valueString);
 
 
-    public abstract decimal getValueDecimal();
-    public abstract bool getValueBoolean();
-    public abstract Vector4 getValueVector4();
-    public abstract Vector3 getValueVector3();
-    public abstract Vector2 getValueVector2();
-    public abstract Vector3Int getValueVector3Int();
-    public abstract Vector2Int getValueVector2Int();
+    public virtual decimal getValueDecimal(){
+        throw new System.NotSupportedException();
+    }
+    public virtual bool getValueBoolean(){
+        throw new System.NotSupportedException();
+    }
+    public virtual Vector4 getValueVector4(){
+        throw new System.NotSupportedException();
+    }
+    public virtual Vector3 getValueVector3(){
+        throw new System.NotSupportedException();
+    }
+    public virtual Vector2 getValueVector2(){
+        throw new System.NotSupportedException();
+    }
+    public virtual Vector3Int getValueVector3Int(){
+        throw new System.NotSupportedException();
+    }
+    public virtual Vector2Int getValueVector2Int(){
+        throw new System.NotSupportedException();
+    }
     public abstract object getValueAsObject();
     public abstract void setFromObject(object value);
 }

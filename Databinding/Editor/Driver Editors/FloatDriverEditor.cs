@@ -24,6 +24,7 @@ public class FloatDriverEditor : DriverEditor<float,float> {
             }
         }
 
+        serializedObject.ApplyModifiedProperties();
         base.OnInspectorGUI();
         
         

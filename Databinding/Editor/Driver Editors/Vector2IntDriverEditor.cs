@@ -27,9 +27,9 @@ public class Vector2IntDriverEditor: DriverEditor<Vector2Int,Vector2Int> {
             }
         }
 
+        serializedObject.ApplyModifiedProperties();
         base.OnInspectorGUI();
 
-        serializedObject.ApplyModifiedProperties();
         
     }
 }

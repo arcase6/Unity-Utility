@@ -32,9 +32,9 @@ public class Vector3DriverEditor: DriverEditor<Vector3,Vector3> {
             }
         }
 
+        serializedObject.ApplyModifiedProperties();
         base.OnInspectorGUI();
 
-        serializedObject.ApplyModifiedProperties();
         
     }
 }

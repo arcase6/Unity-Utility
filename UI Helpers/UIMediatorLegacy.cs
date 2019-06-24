@@ -8,7 +8,7 @@ using UnityEngine;
     The UIMediator is a component that is used to interface with a UI Element that contains text (Either TMPro or Legacy Unity Text).
     It is used when you want to do formatting on a submitted value or when you using one of the databinding components.
  */
-public class UIMediator : MonoBehaviour
+public class UIMediatorLegacy : MonoBehaviour
 {
     private UIControlType controlType;
     public UIControlType ControlType { get => controlType; }

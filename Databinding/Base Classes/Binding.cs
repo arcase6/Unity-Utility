@@ -16,20 +16,20 @@ public class Binding : MonoBehaviour, IListener
     [SerializeField]
     private BindingSourceData SourceRaw = new BindingSourceData(){ReferenceType = BindingSourceType.MonoBehaviour}; //included so unity can serialize properly
     private float cachedSourceValue = 0.0f;
-    private UIMediator Mediator;
+    private UIMediatorLegacy Mediator;
 
     private void Reset()
     {
-        if (GetComponent<UIMediator>() == null)
+        if (GetComponent<UIMediatorLegacy>() == null)
         {
-            gameObject.AddComponent(typeof(UIMediator));
+            gameObject.AddComponent(typeof(UIMediatorLegacy));
         }
         SourceRaw = new BindingSourceData(){ReferenceType = BindingSourceType.MonoBehaviour,ObjectReference = null};
     }
 
     private void Awake()
     {
-        Mediator = GetComponent<UIMediator>();
+        Mediator = GetComponent<UIMediatorLegacy>();
     }
 
     public virtual void OnBeforeSerialize()

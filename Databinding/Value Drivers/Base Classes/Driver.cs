@@ -6,6 +6,8 @@ using UnityEngine;
 
 public abstract class Driver<T,U> : MonoBehaviour, IListener, ISerializationCallbackReceiver
 {
+
+    public bool RunOnEnable = true;
     protected bool UpdateFlag;
 
     public Component DriveTarget;
@@ -50,7 +52,7 @@ public abstract class Driver<T,U> : MonoBehaviour, IListener, ISerializationCall
         {
             source?.AddListener(this);
         }
-        this.UpdateFlag = true;
+        this.UpdateFlag = RunOnEnable;
     }
 
     private void OnDisable()
@@ -113,7 +115,7 @@ public abstract class Driver<T,U> : MonoBehaviour, IListener, ISerializationCall
         }
         catch (System.Exception e)
         {
-            Debug.LogError("Failed to set Drive target" + e.Message);
+            Debug.LogError("Failed to set Drive target: " + e.Message);
         }
     }
 

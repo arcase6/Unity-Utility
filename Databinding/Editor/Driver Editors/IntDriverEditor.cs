@@ -23,6 +23,7 @@ public class IntegerDriverEditor : DriverEditor<int,int> {
                 ((IntegerDriver)target).SetUpdateFlag(true); 
             }
         }
+        serializedObject.ApplyModifiedProperties();
 
         base.OnInspectorGUI();
         

@@ -24,6 +24,7 @@ public class DecimalDriverEditor : DriverEditor<decimal,decimal> {
             }
         }
 
+        serializedObject.ApplyModifiedProperties();
         base.OnInspectorGUI();
         
         

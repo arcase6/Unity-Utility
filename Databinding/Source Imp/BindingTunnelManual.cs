@@ -36,7 +36,7 @@ public class BindingTunnelManual : BindingSourceMonobehaviour
 
     [SerializeField]
     [HideInInspector]
-    private BindingUpdateMode updateMode = BindingUpdateMode.PropertyChangedEvent;
+    private BindingUpdateMode updateMode = BindingUpdateMode.Manual;
 
     public BindingUpdateMode UpdateMode
     {
@@ -198,7 +198,7 @@ public class BindingTunnelManual : BindingSourceMonobehaviour
                     SetSourceValue(VectorExtensions.ParseVector2Int(valueString));
                     break;
                 default:
-                    throw new System.NotSupportedException("The binding source does not have the variable type set or it is linked to an unsupported data type");
+                    throw new System.NotSupportedException("The binding source does not have the variable type set or it is linked to a supported data type");
             }
         }
         catch (System.Exception e)
@@ -378,6 +378,8 @@ public class BindingTunnelManual : BindingSourceMonobehaviour
             case VariableType.Vector2Int:
                 Vector2Int v2i = (Vector2Int)objectRef;
                 return v2i.ToString();
+            case VariableType.String:
+                return objectRef.ToString();
             default:
                 throw new System.NotSupportedException();
         }
