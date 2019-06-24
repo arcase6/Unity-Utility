@@ -23,8 +23,18 @@ public class DecimalDriver : Driver<decimal,decimal>
     {
         if(SourceCount == 1)
             return BindingSources.First().getValueDecimal();
-        else if(SourceCount > 1)
-            return BindingSources.Average(b => b.getValueDecimal());
+        else if(SourceCount > 1){
+            decimal sum = 0;
+            foreach(BindingSourceData source in this.BindingSourcesSerializable){
+                decimal value = source.RuntimeBindingSource.getValueDecimal();
+                if(source.IsInverted) value *= -1;
+                sum += value;
+            }
+            if(this.AverageSourceValues){
+                sum = sum / BindingSources.Count();
+            }
+            return sum + offset;
+        }
         else
             throw new System.NullReferenceException("There are no sources defined for this driver.");
         

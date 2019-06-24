@@ -25,11 +25,14 @@ public class Vector3Driver : Driver<Vector3,Vector3>
         if(SourceCount == 1)
             return BindingSources.First().getValueVector3() + offset;
         else if(SourceCount > 1){
-            Vector3 sum = Vector3.zero;
-            foreach(IBindingSource source in BindingSources){
-                sum += source.getValueVector3();
+            Vector3 sum = new Vector3(0,0,0);
+            foreach(BindingSourceData source in this.BindingSourcesSerializable){
+                Vector3 value = source.RuntimeBindingSource.getValueVector3();
+                if(source.IsInverted) value *= -1;
+                sum += value;
             }
-            sum = sum / SourceCount;
+            if(this.AverageSourceValues)
+                sum = sum / BindingSources.Count();
             return sum + offset;
         }
         else

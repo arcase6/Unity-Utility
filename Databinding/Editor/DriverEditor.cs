@@ -13,7 +13,7 @@ public class DriverEditor<T,U> : Editor {
     private SerializedProperty TargetP;
     private SerializedProperty PropertyNameP;
     private SerializedProperty PostProcessorP;
-    private SerializedProperty AggregateSourcesP;
+    private SerializedProperty AverageSourceValuesP;
     private SerializedProperty RunOnEnableP;
     SerializedProperty ModeOfOperationP;
 
@@ -41,7 +41,7 @@ public class DriverEditor<T,U> : Editor {
         PropertyNameP = serializedObject.FindProperty("TargetProperty");
         TargetP = serializedObject.FindProperty("DriveTarget");
         PostProcessorP = serializedObject.FindProperty("PostProcessorSerializable");
-        AggregateSourcesP = serializedObject.FindProperty("AverageSourceValues");
+        AverageSourceValuesP = serializedObject.FindProperty("AverageSourceValues");
         RunOnEnableP = serializedObject.FindProperty("RunOnEnable");
 
         CreateReorderableList();
@@ -66,7 +66,7 @@ public class DriverEditor<T,U> : Editor {
         EditorGUILayout.ObjectField(PostProcessorP,new GUIContent(PostProcessorLabel));
 
         if(BindingSourceList.count > 1){
-            EditorGUILayout.PropertyField(AggregateSourcesP);
+            EditorGUILayout.PropertyField(AverageSourceValuesP);
         }
 
         BindingSourceList.DoLayoutList();

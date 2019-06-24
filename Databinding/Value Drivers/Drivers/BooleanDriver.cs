@@ -21,7 +21,7 @@ public class BooleanDriver : Driver<bool,bool>
 
     public override bool GenerateDriveValue()
     {
-        if(SourceCount > 1){
+        if(SourceCount >= 1){
             return BindingSources.First().getValueBoolean() ^ InvertValue;
         }
         else

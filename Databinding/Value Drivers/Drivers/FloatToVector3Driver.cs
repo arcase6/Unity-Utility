@@ -29,7 +29,6 @@ public class FloatToVector3Driver : DriverContextSensitive<float, Vector3>
             }
             if(this.AverageSourceValues)
                 sourcesAverage /= SourceCount;
-
         }
         else
             throw new System.NullReferenceException("There are no sources defined for this driver.");

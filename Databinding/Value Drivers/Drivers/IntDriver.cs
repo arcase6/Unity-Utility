@@ -25,10 +25,15 @@ public class IntegerDriver : Driver<int,int>
             return BindingSources.First().getValueInteger();
         else if(SourceCount > 1){
             int sum = 0;
-            foreach(IBindingSource b in BindingSources){
-                sum += b.getValueInteger();
-            }          
-            return sum / SourceCount;
+            foreach(BindingSourceData source in this.BindingSourcesSerializable){
+                int value = source.RuntimeBindingSource.getValueInteger();
+                if(source.IsInverted) value *= -1;
+                sum += value;
+            }
+            if(this.AverageSourceValues){
+                sum = sum / BindingSources.Count();
+            }
+            return sum + offset;
         }
         else
             throw new System.NullReferenceException("There are no sources defined for this driver.");
