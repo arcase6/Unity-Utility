@@ -125,10 +125,9 @@ public class UIComponent
                 return true;
 
             case UIControlType.TMP_InputField:
-                return false;
-                //((TMPro.TMP_InputField)ComponentReference).ActivateInputField();
-                //TMPro glitches out if you try to activate it using code
-                //I think it's just a weird bug
+                
+                ((TMPro.TMP_InputField)ComponentReference).ActivateInputField();
+                return true;
             default: 
                 return false;
         }
