@@ -35,7 +35,7 @@ public class DragPrefab : MonoBehaviour , IBeginDragHandler, IDragHandler, IEndD
     {
         if(eventData.pointerId != (int)DragButton)
             return;
-        var canvas = DragMe.FindInParents<Canvas>(gameObject);
+        var canvas = gameObject.FindInParents<Canvas>();
 		if (canvas == null)
 			return;
 

@@ -90,7 +90,7 @@ public class DropPrefab : MonoBehaviour, IDropHandler, IPointerEnterHandler, IPo
     {
         if (GhostData == null)
         {
-            DropPrefab parentDP = DragMe.FindInParents<DropPrefab>(this.transform.parent?.gameObject);
+            DropPrefab parentDP = GameobjectHelper.FindInParents<DropPrefab>(this.transform.parent?.gameObject);
             //if(parentDP != null) parentDP.OnDrop(eventData);
             return;
         }
