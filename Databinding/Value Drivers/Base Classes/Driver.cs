@@ -10,7 +10,7 @@ public abstract class Driver<T,U> : MonoBehaviour, IListener, ISerializationCall
     public bool RunOnEnable = true;
     protected bool UpdateFlag;
 
-    public Component DriveTarget;
+    public Object DriveTarget;
     public string TargetProperty;
 
     public bool AverageSourceValues;

@@ -3,9 +3,8 @@
 [CreateAssetMenu(fileName = "StringBindingVariable", menuName = "Binding Sources/StringBindingVariable", order = 0)]
 public class StringBindingVariable : BindingSourceScriptableObject
 {
-        public string StartingValue;
+    public string StartingValue;
     
-    [HideInInspector]
     [SerializeField]
     private string value;
 

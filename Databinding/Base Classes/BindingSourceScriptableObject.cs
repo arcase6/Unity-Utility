@@ -59,8 +59,7 @@ public abstract class BindingSourceScriptableObject : ScriptableObject, IBinding
     }
 
 
-    
-    private void Awake(){
+    private void OnEnable(){
         Init();
     }
 
