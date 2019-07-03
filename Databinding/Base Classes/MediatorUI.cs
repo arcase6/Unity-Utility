@@ -10,6 +10,9 @@ public class StringEvent : UnityEngine.Events.UnityEvent<string>
 
 public abstract class MediatorUI<T> : BindingSourceMonobehaviour, ISerializationCallbackReceiver
 {
+
+    protected bool IsInitialized = false;
+
     [SerializeField]
     protected T value;
     public T Value
@@ -18,7 +21,8 @@ public abstract class MediatorUI<T> : BindingSourceMonobehaviour, ISerialization
         set
         {
             this.value = value;
-            this.ShowValue();
+            if(IsInitialized)
+                this.ShowValue();
         }
     }
     public UIComponent[] UIComponents;
@@ -32,6 +36,7 @@ public abstract class MediatorUI<T> : BindingSourceMonobehaviour, ISerialization
             ui.Initialize(value.ToString());
             ui.OnTextChanged.AddListener(s => this.UpdateFromText());
         }
+        IsInitialized = true;
     }
 
     public virtual void Reset()
