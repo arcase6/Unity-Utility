@@ -5,8 +5,8 @@ using UnityEngine.Events;
 
 public class EventListener : MonoBehaviour, IListener
 {
-    
-    public ScriptableEvent Event;
+    [HideInInspector]
+    public ScriptableEvent Source;
     public UnityEvent OnEventRaised;
 
     private void Awake() {
@@ -19,10 +19,10 @@ public class EventListener : MonoBehaviour, IListener
 
 
     private void OnEnable() {
-        Event.AddListener(this);
+        Source.AddListener(this);
     }
 
     private void OnDisable() {
-        Event.RemoveListener(this);    
+        Source.RemoveListener(this);    
     }
 }

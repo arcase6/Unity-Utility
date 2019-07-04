@@ -4,14 +4,22 @@
 public class StringBindingVariable : BindingSourceScriptableObject
 {
     public string StartingValue;
-    
+
     [SerializeField]
     private string value;
 
-    public string Value { get => value; set{ this.value = value; NotifyChange();} }
-    public override VariableType SourceType { get => VariableType.String; set{}} 
-    
-    public override void Init() {
+    public string Value
+    {
+        get => value;
+        set
+        {
+            this.value = value; NotifyChange();
+        }
+    }
+    public override VariableType SourceType { get => VariableType.String; set { } }
+
+    public override void Init()
+    {
         //don't use property to avoid triggering an event on start
         value = StartingValue;
     }
@@ -20,7 +28,7 @@ public class StringBindingVariable : BindingSourceScriptableObject
 
     public override double getValueDouble()
     {
-        throw new System.InvalidOperationException();        
+        throw new System.InvalidOperationException();
     }
 
     public override float getValueFloat()
@@ -45,7 +53,7 @@ public class StringBindingVariable : BindingSourceScriptableObject
 
     public override decimal getValueDecimal()
     {
-        throw new System.InvalidOperationException();        
+        throw new System.InvalidOperationException();
     }
 
     public override bool getValueBoolean()
