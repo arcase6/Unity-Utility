@@ -10,6 +10,9 @@ public class UIComponent
     public Formatter TextFormatter;
     private string CachedValue;
 
+    public string OpeningTag = null;
+    public string ClosingTag = null;
+
     [SerializeField]
     private MonoBehaviour componentReference;
     public MonoBehaviour ComponentReference
@@ -48,7 +51,7 @@ public class UIComponent
     {
         this.ComponentReference = componentReference;
         this.SubscribeToTextChangedEvents();
-        if(!startingTextUnformatted.Equals(""))
+        if (!startingTextUnformatted.Equals(""))
             this.SetDisplayText(startingTextUnformatted);
     }
 
@@ -76,13 +79,18 @@ public class UIComponent
                 Debug.Log("Invalid UI Target set at UI Mediator");
                 return "";
         }
+        if (ClosingTag != "")
+        {
+            currentDisplayText = currentDisplayText.Replace(OpeningTag, "");
+            currentDisplayText = currentDisplayText.Replace(ClosingTag, "");
+        }
         CachePreviousVaue(currentDisplayText);
         return currentDisplayText;
     }
 
     public string GetUnformattedText()
     {
-        if(TextFormatter)
+        if (TextFormatter)
             return TextFormatter.GetRawValue(GetDisplayText());
         else
             return GetDisplayText();
@@ -95,6 +103,10 @@ public class UIComponent
             text = TextFormatter.GetFormattedValue(text, CachedValue);
         }
         CachePreviousVaue(text);
+        if (ClosingTag != "")
+        {
+            text = OpeningTag + text + ClosingTag;
+        }
         switch (this.ComponentType)
         {
             case UIControlType.TMP_InputField:
@@ -118,29 +130,33 @@ public class UIComponent
         }
     }
 
-    public bool SetFocus(){
-        switch(ComponentType){
+    public bool SetFocus()
+    {
+        switch (ComponentType)
+        {
             case UIControlType.Legacy_InputField:
                 ((UnityEngine.UI.InputField)ComponentReference).ActivateInputField();
                 return true;
 
             case UIControlType.TMP_InputField:
-                
+
                 ((TMPro.TMP_InputField)ComponentReference).ActivateInputField();
                 return true;
-            default: 
+            default:
                 return false;
         }
     }
+
 
     private void SubscribeToTextChangedEvents()
     {
         switch (this.ComponentType)
         {
             case UIControlType.TMP_InputField:
-                if(ContinuousUpdateMode)
+                if (ContinuousUpdateMode)
                     ((TMPro.TMP_InputField)ComponentReference).onValueChanged.AddListener(RaiseSubmit);
-                else{
+                else
+                {
                     ((TMPro.TMP_InputField)ComponentReference).onEndEdit.AddListener(RaiseSubmit);
                     ((TMPro.TMP_InputField)ComponentReference).onDeselect.AddListener(RaiseSubmit);
                 }
@@ -148,7 +164,7 @@ public class UIComponent
                 break;
 
             case UIControlType.Legacy_InputField:
-                if(ContinuousUpdateMode)
+                if (ContinuousUpdateMode)
                     ((UnityEngine.UI.InputField)ComponentReference).onEndEdit.AddListener(RaiseSubmit);
                 else
                     ((UnityEngine.UI.InputField)ComponentReference).onValueChanged.AddListener(RaiseSubmit);

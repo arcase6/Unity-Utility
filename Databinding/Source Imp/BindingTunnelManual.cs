@@ -261,6 +261,7 @@ public class BindingTunnelManual : BindingSourceMonobehaviour
     {
         if (updateMode == BindingUpdateMode.PropertyChangedEvent)
             SubscribeToPropertyChanged();
+        cachedValue = null; //set to null to trigger recheck on awake in case changes happened while inactive
     }
 
     private void OnDisable()

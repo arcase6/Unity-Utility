@@ -1,12 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-[System.Serializable]
-public class StringEvent : UnityEngine.Events.UnityEvent<string>
-{
-
-}
-
 
 public abstract class MediatorUI<T> : BindingSourceMonobehaviour, ISerializationCallbackReceiver
 {
@@ -68,6 +62,31 @@ public abstract class MediatorUI<T> : BindingSourceMonobehaviour, ISerialization
         }
     }
 
+    public void FocusInputField(){
+        foreach(UIComponent component in this.UIComponents){
+            if(component.SetFocus() == true){
+                break;
+            }
+        }
+    }
+
+    public void SetColor(Color color){
+        Color32 color32 = color;
+        byte[] rawColor = new byte[]{color32.r,color32.g,color32.b};
+        string hexValue = "#" + System.BitConverter.ToString(rawColor).Replace("-","");
+        string openingTag = "<color="+ hexValue+">";
+        string closingTag = "</color>";
+        SetTags(openingTag,closingTag);
+    }
+
+    public void SetTags(string openingTag,string closingTag){
+        foreach(UIComponent component in this.UIComponents){
+            component.OpeningTag = openingTag;
+            component.ClosingTag = closingTag;
+        }
+        ShowValue();
+    }
+
     public virtual string GetDisplayText()
     {
         if (UIComponents.Length == 1)
@@ -91,14 +110,6 @@ public abstract class MediatorUI<T> : BindingSourceMonobehaviour, ISerialization
         else
         {
             return "Unconnected";
-        }
-    }
-
-    public void FocusInputField(){
-        foreach(UIComponent component in this.UIComponents){
-            if(component.SetFocus() == true){
-                break;
-            }
         }
     }
 

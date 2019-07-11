@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-[InitializeOnLoad]
 public abstract class BindingSourceScriptableObject : ScriptableObject, IBindingSource
 {
     private List<IListener> listeners = new List<IListener>();

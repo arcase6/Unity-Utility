@@ -115,7 +115,12 @@ public abstract class Driver<T,U> : MonoBehaviour, IListener, ISerializationCall
         }
         catch (System.Exception e)
         {
-            Debug.LogError("Failed to set Drive target: " + e.Message);
+            if(SetupPropertyDelegates()){
+                UpdateFlag = true;
+            }else{ 
+                Debug.LogError("Failed to set Drive target- : " + e.Message);
+                OnDisable();
+            }
         }
     }
 
