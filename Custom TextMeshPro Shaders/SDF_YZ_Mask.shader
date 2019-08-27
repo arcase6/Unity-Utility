@@ -1,4 +1,4 @@
-Shader "TextMeshPro/SDF World Mask" {
+Shader "TextMeshPro/SDF_Mask_YZ (World)" {
 
 	Properties {
 		_AlphaClipping		("Masking Box (World)", vector) = (0,0,10,10)
@@ -312,13 +312,14 @@ Shader "TextMeshPro/SDF World Mask" {
 				#endif
 				
 
-				fixed4 clippingValue = saturate(fixed4(input.worldPosition.xy - _AlphaClipping.xy,_AlphaClipping.zw - input.worldPosition.xy));
+				fixed4 clippingValue = saturate(fixed4(input.worldPosition.yz - _AlphaClipping.xy,_AlphaClipping.zw - input.worldPosition.yz));
 				fixed shouldClip = clippingValue.x * clippingValue.y * clippingValue.z * clippingValue.w;
 				if(shouldClip == 0)
-					faceColor.a = 0;
-				//#if UNITY_UI_ALPHACLIP
+					clip(- 0.001);
+
+				#if UNITY_UI_ALPHACLIP
 					clip(faceColor.a - 0.001);
-				//#endif
+				#endif
 
 
 
